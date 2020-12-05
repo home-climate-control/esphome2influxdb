@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 public class Gateway {
 
@@ -29,8 +30,8 @@ public class Gateway {
         try {
 
             if (args.length == 0) {
-                logger.error("Usage: esphome2influxdb <YAML configuration file path or URL>");
-                logger.error("Refusing to work without configuration, see https://github.com/home-climate-control/esphome2influxdb/wiki to get started");
+                logger.fatal("Usage: esphome2influxdb <YAML configuration file path or URL>");
+                logger.fatal("Refusing to work without configuration, see https://github.com/home-climate-control/esphome2influxdb/wiki to get started");
                 System.exit(-1);
             }
 
@@ -42,8 +43,10 @@ public class Gateway {
 
             throw new IllegalStateException("Not Implemented");
 
+        } catch (ScannerException ex) {
+            logger.fatal("Malformed YAML while parsing {}", args[0], ex);
         } catch (Throwable t) {
-            logger.fatal("Unexpected exception",  t);
+            logger.fatal("Unexpected exception while parsing {}", args[0],  t);
         } finally {
             ThreadContext.pop();
         }
