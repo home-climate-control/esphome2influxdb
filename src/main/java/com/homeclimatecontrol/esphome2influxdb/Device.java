@@ -5,6 +5,7 @@ import java.util.Map;
 public abstract class Device {
 
     public enum Type {
+        CLIMATE,
         SENSOR,
         SWITCH
     }
