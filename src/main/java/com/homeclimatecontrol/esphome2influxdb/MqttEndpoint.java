@@ -6,6 +6,6 @@ package com.homeclimatecontrol.esphome2influxdb;
 public class MqttEndpoint extends Endpoint {
 
     public MqttEndpoint() {
-        port = 8883;
+        port = 1883;
     }
 }
