@@ -4,35 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 public class ConfigurationTest {
 
     private final Logger logger = LogManager.getLogger();
-    private final Yaml yaml = getYaml();
-
-    private Yaml getYaml() {
-
-        Constructor c = new Constructor(Configuration.class);
-        TypeDescription td = new TypeDescription(Configuration.class);
-
-        td.addPropertyParameters("devices", Device.class);
-//        td.addPropertyParameters("sensor", Sensor.class);
-//        td.addPropertyParameters("switch", Switch.class);
-
-        c.addTypeDescription(td);
-
-        return new Yaml(c);
-    }
+    private final Yaml yaml = new Yaml();
 
     @Test
     public void sources0() {
@@ -86,9 +68,9 @@ public class ConfigurationTest {
 
         try {
 
-            CF c = yaml.loadAs(
+            Configuration c = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-configuration-complete.yaml"),
-                    CF.class);
+                    Configuration.class);
 
             logger.info("loaded: {}", c);
 
@@ -97,24 +79,20 @@ public class ConfigurationTest {
         }
     }
 
-    public static class CF {
-        public Set<MqttEndpoint> sources = new LinkedHashSet<>();
-        public Set<InfluxDbEndpoint> targets = new LinkedHashSet<>();
-        public Set<Object> devices = new LinkedHashSet<>();
-        @Override
-        public String toString() {
+    @Test
+    public void raw() {
 
-            StringBuilder sb = new StringBuilder();
+        ThreadContext.push("raw");
 
-            sb.append("{");
+        try {
 
-            sb.append("sources=").append(sources).append(",");
-            sb.append("targets=").append(targets).append(",");
-            sb.append("devices=").append(devices);
+            Object c = yaml.load(
+                    getClass().getClassLoader().getResourceAsStream("instantiate-configuration-complete.yaml"));
 
-            sb.append("}");
+            logger.info("loaded: {}", c);
 
-            return sb.toString();
+        } finally {
+            ThreadContext.pop();
         }
     }
 }
