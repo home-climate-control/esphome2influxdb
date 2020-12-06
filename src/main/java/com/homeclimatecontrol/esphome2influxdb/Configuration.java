@@ -15,7 +15,7 @@ public class Configuration implements Verifiable {
 
     public Set<MqttEndpoint> sources = new LinkedHashSet<>();
     public Set<InfluxDbEndpoint> targets = new LinkedHashSet<>();
-    public Set<Device> devices = new LinkedHashSet<>();
+    public Set<Object> devices = new LinkedHashSet<>();
 
     /**
      * Verify the currently loaded configuration.
@@ -88,10 +88,28 @@ public class Configuration implements Verifiable {
             }
         }
 
-        if (devices != null) {
-            for (Verifiable v : devices) {
-                v.verify();
-            }
-        }
+        // VT: FIXME: A bit later; need to figure out how to load them right first
+
+//        if (devices != null) {
+//            for (Verifiable v : devices) {
+//                v.verify();
+//            }
+//        }
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{");
+
+        sb.append("sources=").append(sources).append(",");
+        sb.append("targets=").append(targets).append(",");
+        sb.append("devices=").append(devices);
+
+        sb.append("}");
+
+        return sb.toString();
     }
 }

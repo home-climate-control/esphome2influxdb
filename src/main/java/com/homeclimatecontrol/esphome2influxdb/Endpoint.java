@@ -52,4 +52,22 @@ public class Endpoint implements Verifiable {
             throw new IllegalArgumentException(message);
         }
     }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{");
+
+        sb.append("class=").append(getClass().getSimpleName()).append(",");
+        sb.append("host:port=").append(host).append(":").append(port);
+        if (username != null || password != null) {
+            sb.append(",username:password").append(username).append(":").append(password);
+        }
+
+        sb.append("}");
+
+        return sb.toString();
+    }
 }

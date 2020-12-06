@@ -1,6 +1,7 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,49 +19,22 @@ public abstract class Device implements Verifiable {
     /**
      * MQTT topic prefix to read updates from.
      */
-    public final String topicPrefix;
+    public String topicPrefix;
 
     /**
      * Tags.
      */
-    public final Map<String, String> tags;
+    public Map<String, String> tags = new TreeMap<>();
 
     /**
      * Source device name. Either derived from the {@link #topic MQTT topic}, or specified explicitly.
      */
-    public final String source;
+    public String source;
 
     /**
      * Human readable device name. Either derived from the {@link #topic MQTT topic}, or specified explicitly.
      */
-    public final String name;
-
-    public Device(String topicPrefix, Map<String, String> tags) {
-
-        this.topicPrefix = topicPrefix;
-        this.tags = tags;
-
-        this.source = resolveName(topicPrefix);
-        this.name = this.source;
-    }
-
-    public Device(String topicPrefix, Map<String, String> tags, String source) {
-
-        this.topicPrefix = topicPrefix;
-        this.tags = tags;
-
-        this.source = source == null ? resolveName(topicPrefix) : source;
-        this.name = this.source;
-    }
-
-    public Device(String topicPrefix, Map<String, String> tags, String source, String name) {
-
-        this.topicPrefix = topicPrefix;
-        this.tags = tags;
-
-        this.source = source == null ? resolveName(topicPrefix) : source;
-        this.name = name == null ? resolveName(topicPrefix) : name;
-    }
+    public String name;
 
     /**
      * Get device type.
@@ -95,5 +69,19 @@ public abstract class Device implements Verifiable {
     @Override
     public void verify() {
         logger.warn("verify() not implemented for {}", getClass().getName());
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("{");
+
+        sb.append("class=").append(getClass().getName());
+
+        sb.append("}");
+
+        return sb.toString();
     }
 }
