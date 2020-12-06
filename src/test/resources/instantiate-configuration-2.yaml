@@ -1,0 +1,6 @@
+# com.homeclimatecontrol.esphome2influxdb.ConfigurationTest#sources2()
+sources:
+  - host: localhost
+    port: 8888
+  - host: localhost
+    port: 9999

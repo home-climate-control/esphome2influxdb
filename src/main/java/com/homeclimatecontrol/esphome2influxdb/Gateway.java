@@ -37,9 +37,18 @@ public class Gateway {
 
             Yaml yaml = new Yaml();
 
-            Object source = yaml.load(getStream(args[0]));
+            Configuration cf = yaml.loadAs(getStream(args[0]), Configuration.class);
 
-            logger.info("source: {}",  source);
+            if (cf == null) {
+                throw new IllegalArgumentException("No usable configuration at " + args[0] + "?");
+            }
+
+            logger.info("configuration: {}",  cf);
+
+            if (!cf.verify()) {
+                logger.info("Terminating");
+                return;
+            }
 
             throw new IllegalStateException("Not Implemented");
 
