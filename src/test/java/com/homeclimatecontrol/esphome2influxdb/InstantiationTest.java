@@ -31,4 +31,23 @@ public class InstantiationTest {
         assertNull(e.username);
         assertNull(e.password);
     }
+
+    @Test
+    public void influxDbEndpoint1() {
+
+        InfluxDbEndpoint e = yaml.loadAs(
+                getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-1.yaml"),
+                InfluxDbEndpoint.class);
+
+        logger.info("loaded: {}", e);
+
+        assertEquals("localhost", e.host);
+        assertEquals(8086, e.port);
+        assertEquals("eCegh5xe", e.username);
+        assertEquals("Boh4ohda", e.password);
+
+        // Defaults
+
+        assertNull(e.name);
+    }
 }
