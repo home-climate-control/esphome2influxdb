@@ -6,6 +6,13 @@ package com.homeclimatecontrol.esphome2influxdb;
 public class MqttEndpoint extends Endpoint {
 
     public MqttEndpoint() {
-        port = 1883;
+        setPort(1883);
+    }
+
+    @Override
+    public void verify() {
+
+        super.verify();
+        logger.warn("verify() not implemented for {}", getClass().getName());
     }
 }

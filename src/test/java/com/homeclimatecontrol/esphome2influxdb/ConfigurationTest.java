@@ -53,8 +53,8 @@ public class ConfigurationTest {
 
             Iterator<MqttEndpoint> is = c.sources.iterator();
 
-            assertEquals(8888, is.next().port);
-            assertEquals(9999, is.next().port);
+            assertEquals(8888, is.next().getPort());
+            assertEquals(9999, is.next().getPort());
 
         } finally {
             ThreadContext.pop();

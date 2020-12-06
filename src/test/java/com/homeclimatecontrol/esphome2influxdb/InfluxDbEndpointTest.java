@@ -23,7 +23,7 @@ public class InfluxDbEndpointTest {
         logger.info("loaded: {}", e);
 
         assertEquals("localhost", e.host);
-        assertEquals(8086, e.port);
+        assertEquals(8086, e.getPort());
 
         // Defaults
 
@@ -42,7 +42,7 @@ public class InfluxDbEndpointTest {
         logger.info("loaded: {}", e);
 
         assertEquals("localhost", e.host);
-        assertEquals(8086, e.port);
+        assertEquals(8086, e.getPort());
         assertEquals("eCegh5xe", e.username);
         assertEquals("Boh4ohda", e.password);
 
@@ -61,7 +61,7 @@ public class InfluxDbEndpointTest {
         logger.info("loaded: {}", e);
 
         assertEquals("localhost", e.host);
-        assertEquals(8086, e.port);
+        assertEquals(8086, e.getPort());
 
         // Defaults
 
@@ -80,7 +80,7 @@ public class InfluxDbEndpointTest {
         logger.info("loaded: {}", e);
 
         assertEquals("localhost", e.host);
-        assertEquals(9999, e.port);
+        assertEquals(9999, e.getPort());
 
         // Defaults
 

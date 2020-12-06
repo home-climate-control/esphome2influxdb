@@ -1,0 +1,2 @@
+# com.homeclimatecontrol.esphome2influxdb.MqttEndpointTest#influxDbEndpointNegativePort()
+port: -100

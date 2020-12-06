@@ -23,7 +23,7 @@ public class MqttEndpointTest {
         logger.info("loaded: {}", e);
 
         assertEquals("localhost", e.host);
-        assertEquals(1883, e.port);
+        assertEquals(1883, e.getPort());
 
         // Defaults
 
@@ -42,7 +42,7 @@ public class MqttEndpointTest {
         logger.info("loaded: {}", e);
 
         assertEquals("localhost", e.host);
-        assertEquals(1883, e.port);
+        assertEquals(1883, e.getPort());
         assertEquals("eCegh5xe", e.username);
         assertEquals("Boh4ohda", e.password);
 
@@ -61,7 +61,7 @@ public class MqttEndpointTest {
         logger.info("loaded: {}", e);
 
         assertEquals("localhost", e.host);
-        assertEquals(1883, e.port);
+        assertEquals(1883, e.getPort());
 
         // Defaults
 
@@ -80,12 +80,36 @@ public class MqttEndpointTest {
         logger.info("loaded: {}", e);
 
         assertEquals("localhost", e.host);
-        assertEquals(9999, e.port);
+        assertEquals(9999, e.getPort());
 
         // Defaults
 
         assertNull(e.name);
         assertNull(e.username);
         assertNull(e.password);
+    }
+
+    @Test
+    public void mqttEndpointNegativePort() {
+
+        MqttEndpoint e = yaml.loadAs(
+                getClass().getClassLoader().getResourceAsStream("instantiate-endpoint-negative-port.yaml"),
+                MqttEndpoint.class);
+
+        logger.info("loaded: {}", e);
+
+        assertEquals("localhost", e.host);
+
+        // We're still good at this point
+        assertEquals(-100, e.getPort());
+
+        // But the verification mustn't pass
+        try {
+
+            e.verify();
+
+        } catch (IllegalArgumentException ex) {
+            assertEquals("Invalid state:\nport can't be negative (-100 provided)", ex.getMessage());
+        }
     }
 }
