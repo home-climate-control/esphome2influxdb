@@ -45,7 +45,7 @@ public class Gateway {
 
             logger.info("configuration: {}",  cf);
 
-            if (!cf.verify()) {
+            if (!cf.needToStart()) {
                 logger.info("Terminating");
                 return;
             }

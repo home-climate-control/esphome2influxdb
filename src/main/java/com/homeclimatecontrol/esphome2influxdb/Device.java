@@ -2,7 +2,12 @@ package com.homeclimatecontrol.esphome2influxdb;
 
 import java.util.Map;
 
-public abstract class Device {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public abstract class Device implements Verifiable {
+
+    protected final Logger logger = LogManager.getLogger();
 
     public enum Type {
         CLIMATE,
@@ -85,5 +90,10 @@ public abstract class Device {
         }
 
         return result;
+    }
+
+    @Override
+    public void verify() {
+        logger.warn("verify() not implemented for {}", getClass().getName());
     }
 }

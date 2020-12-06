@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Main configuration class.
  */
-public class Configuration {
+public class Configuration implements Verifiable {
 
     private final Logger logger = LogManager.getLogger();
 
@@ -26,26 +26,39 @@ public class Configuration {
      *
      * @throws IllegalArgumentException if the configuration doesn't make sense, or critical parts are missing.
      */
-    public boolean verify() {
+    public boolean needToStart() {
 
-        if (!haveSources()) {
-            logger.warn("No sources specified, assuming configuration test run");
+        try {
+
+            if (!haveSources()) {
+                logger.warn("No sources specified, assuming configuration test run");
+            }
+
+            if (!haveTargets()) {
+                logger.warn("No targets specified, assuming configuration test run");
+            }
+
+            if (!haveDevices()) {
+                logger.warn("No devices specified, assuming configuration test run");
+            }
+
+            if (!haveSources() && !haveTargets() && !haveDevices()) {
+                logger.error("Empty configuration, nothing to do");
+                return false;
+            }
+
+            if (!haveSources() && !haveTargets() && haveDevices()) {
+                logger.error("Just the device configuration found, not starting anything");
+                return false;
+            }
+
+            return true;
+
+        } finally {
+
+            // No matter what happens next, need to make sure the configuration is sane
+            verify();
         }
-
-        if (!haveTargets()) {
-            logger.warn("No targets specified, assuming configuration test run");
-        }
-
-        if (!haveDevices()) {
-            logger.warn("No devices specified, assuming configuration test run");
-        }
-
-        if (!haveSources() && !haveTargets() && !haveDevices()) {
-            logger.error("Empty configuration, nothing to do");
-            return false;
-        }
-
-        return true;
     }
 
     private boolean haveSources() {
@@ -58,5 +71,27 @@ public class Configuration {
 
     private boolean haveDevices() {
         return devices != null && !devices.isEmpty();
+    }
+
+    @Override
+    public void verify() {
+
+        if (sources != null) {
+            for (Verifiable v : sources) {
+                v.verify();
+            }
+        }
+
+        if (targets != null) {
+            for (Verifiable v : targets) {
+                v.verify();
+            }
+        }
+
+        if (devices != null) {
+            for (Verifiable v : devices) {
+                v.verify();
+            }
+        }
     }
 }

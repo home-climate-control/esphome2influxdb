@@ -29,7 +29,7 @@ public class ConfigurationTest {
 
             logger.info("loaded: {}", c);
 
-            assertFalse(c.verify());
+            assertFalse(c.needToStart());
 
         } finally {
             ThreadContext.pop();
