@@ -5,11 +5,15 @@ package com.homeclimatecontrol.esphome2influxdb;
  */
 public class Endpoint {
 
-    public final String name;
-    public final String host;
-    public final int port;
-    public final String username;
-    public final String password;
+    private String name;
+    private String host;
+    private int port;
+    private String username;
+    private String password;
+
+    public Endpoint() {
+        // Make SnakeYAML happy
+    }
 
     public Endpoint(String name, String host, int port) {
         this(name, host, port, null, null);
@@ -22,5 +26,13 @@ public class Endpoint {
         this.port = port;
         this.username = username;
         this.password = password;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 }
