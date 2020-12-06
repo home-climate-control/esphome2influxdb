@@ -6,7 +6,7 @@ package com.homeclimatecontrol.esphome2influxdb;
 public class Endpoint {
 
     public String name;
-    public String host;
+    public String host = "localhost";
     public int port;
     public String username;
     public String password;

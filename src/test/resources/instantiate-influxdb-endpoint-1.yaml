@@ -1,4 +1,4 @@
-# com.homeclimatecontrol.esphome2influxdb.InstantiationTest#influxDbEndpoint1()
+# com.homeclimatecontrol.esphome2influxdb.InfluxDbEndpointTest#influxDbEndpoint1()
 host: localhost
 port: 8086
 username: eCegh5xe

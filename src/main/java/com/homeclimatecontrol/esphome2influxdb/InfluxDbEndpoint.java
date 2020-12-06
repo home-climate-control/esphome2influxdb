@@ -5,4 +5,8 @@ package com.homeclimatecontrol.esphome2influxdb;
  */
 public class InfluxDbEndpoint extends Endpoint {
 
+    public InfluxDbEndpoint() {
+
+        port = 8086;
+    }
 }
