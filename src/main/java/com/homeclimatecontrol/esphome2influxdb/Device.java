@@ -74,6 +74,20 @@ public abstract class Device implements Verifiable {
 
     @Override
     public void verify() {
+
+        // By this time, all the properties were already set, and they either click together, or blow up
+
+        // There are three parts that depend on each other and need to be sorted out in this order:
+        //
+        // 1. Topic prefix
+        // 2. Source
+        // 3. Human readable name
+        //
+        // If the topic prefix contains the device type as the next to last token, then we can derive the source,
+        // ...unless it's been specified elsewhere in the configuration, then we blow up,
+        // ...but if the topic doesn't contain the source, and the source is not specified, we blow up anyway,
+        // ...and only set the name to default (being same as source) if it is not explicitly provided.
+
         logger.warn("verify() not implemented for {}", getClass().getName());
     }
 
