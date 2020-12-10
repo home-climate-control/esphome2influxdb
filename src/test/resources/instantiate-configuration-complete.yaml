@@ -1,0 +1,17 @@
+# com.homeclimatecontrol.esphome2influxdb.ConfigurationTest#complete()
+sources:
+  - host: localhost
+
+targets:
+  - host: localhost
+  
+devices:
+  - type: climate
+    topicPrefix: /esphome/67db2c
+  
+  - type: sensor
+    topicPrefix: /esphome/25c065
+  
+  - type: switch
+    topicPrefix: /esphome/3f0cf7
+  
