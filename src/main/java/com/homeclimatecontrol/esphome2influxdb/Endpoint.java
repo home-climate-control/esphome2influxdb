@@ -69,6 +69,15 @@ public class Endpoint implements Verifiable {
 
         sb.append("{");
 
+        render(sb);
+
+        sb.append("}");
+
+        return sb.toString();
+    }
+
+    protected void render(StringBuilder sb) {
+
         sb.append("class=").append(getClass().getSimpleName()).append(",");
         sb.append("name=").append(getName());
         sb.append("host:port=").append(host).append(":").append(port);
@@ -76,9 +85,5 @@ public class Endpoint implements Verifiable {
         if (username != null || password != null) {
             sb.append(",username:password").append(username).append(":").append(password);
         }
-
-        sb.append("}");
-
-        return sb.toString();
     }
 }
