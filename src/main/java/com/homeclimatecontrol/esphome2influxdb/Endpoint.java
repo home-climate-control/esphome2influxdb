@@ -53,6 +53,15 @@ public class Endpoint implements Verifiable {
         }
     }
 
+    public String getName() {
+
+        if (name != null) {
+            return name;
+        }
+
+        return host + ":" + port;
+    }
+
     @Override
     public String toString() {
 
@@ -61,7 +70,9 @@ public class Endpoint implements Verifiable {
         sb.append("{");
 
         sb.append("class=").append(getClass().getSimpleName()).append(",");
+        sb.append("name=").append(getName());
         sb.append("host:port=").append(host).append(":").append(port);
+
         if (username != null || password != null) {
             sb.append(",username:password").append(username).append(":").append(password);
         }
