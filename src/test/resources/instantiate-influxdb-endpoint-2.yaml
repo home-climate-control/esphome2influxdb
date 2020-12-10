@@ -1,2 +1,3 @@
 # com.homeclimatecontrol.esphome2influxdb.InfluxDbEndpointTest#influxDbEndpoint3()
 host: localhost
+name: zero

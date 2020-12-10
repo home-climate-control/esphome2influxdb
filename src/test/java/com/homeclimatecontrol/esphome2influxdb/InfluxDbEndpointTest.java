@@ -27,7 +27,8 @@ public class InfluxDbEndpointTest {
 
         // Defaults
 
-        assertNull(e.name);
+        assertEquals("localhost:8086", e.getName());
+        assertEquals("esphome", e.db);
         assertNull(e.username);
         assertNull(e.password);
     }
@@ -48,7 +49,7 @@ public class InfluxDbEndpointTest {
 
         // Defaults
 
-        assertNull(e.name);
+        assertEquals("localhost:8086", e.getName());
     }
 
     @Test
@@ -62,10 +63,10 @@ public class InfluxDbEndpointTest {
 
         assertEquals("localhost", e.host);
         assertEquals(8086, e.getPort());
+        assertEquals("zero", e.getName());
 
         // Defaults
 
-        assertNull(e.name);
         assertNull(e.username);
         assertNull(e.password);
     }
@@ -81,10 +82,10 @@ public class InfluxDbEndpointTest {
 
         assertEquals("localhost", e.host);
         assertEquals(9999, e.getPort());
+        assertEquals("localhost:9999", e.getName());
 
         // Defaults
 
-        assertNull(e.name);
         assertNull(e.username);
         assertNull(e.password);
     }

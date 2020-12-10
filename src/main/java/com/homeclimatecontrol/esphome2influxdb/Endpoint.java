@@ -13,7 +13,7 @@ public class Endpoint implements Verifiable {
 
     protected final Logger logger = LogManager.getLogger();
 
-    public String name;
+    private String name;
     public String host = "localhost";
     private int port;
     public String username;
@@ -60,6 +60,10 @@ public class Endpoint implements Verifiable {
         }
 
         return host + ":" + port;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
