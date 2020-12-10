@@ -37,3 +37,7 @@ bin
 # Ignore Joe's Editor backups
 *~
 .*~
+
+# Spring?
+
+.attach_pid*
