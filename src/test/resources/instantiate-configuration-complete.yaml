@@ -4,6 +4,9 @@ sources:
 
 targets:
   - host: localhost
+  - host: remote
+    db: remote-db
+    port: 9999
   
 devices:
   - type: climate

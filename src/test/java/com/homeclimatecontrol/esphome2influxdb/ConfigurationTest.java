@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -73,6 +74,26 @@ public class ConfigurationTest {
                     Configuration.class);
 
             logger.info("loaded: {}", c);
+
+            Set<InfluxDbEndpoint> targets = c.targets;
+
+            assertEquals(2, targets.size());
+
+            {
+                Iterator<InfluxDbEndpoint> i = targets.iterator();
+
+                InfluxDbEndpoint local = i.next();
+
+                assertEquals("localhost", local.host);
+                assertEquals(8086, local.getPort());
+                assertEquals("esphome", local.db);
+
+                InfluxDbEndpoint remote = i.next();
+
+                assertEquals("remote", remote.host);
+                assertEquals(9999, remote.getPort());
+                assertEquals("remote-db", remote.db);
+            }
 
         } finally {
             ThreadContext.pop();
