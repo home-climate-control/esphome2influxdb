@@ -30,6 +30,8 @@ public class DeviceTest {
             assertNotNull(s);
             assertEquals("/esphome/67db2c", s.topicPrefix);
 
+            s.verify();
+
         } finally {
             ThreadContext.pop();
         }

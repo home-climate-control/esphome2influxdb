@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 public abstract class Device implements Verifiable {
 
@@ -52,27 +53,39 @@ public abstract class Device implements Verifiable {
     @Override
     public void verify() {
 
-        // By this time, all the properties were already set, and they either click together, or blow up
+        ThreadContext.push("verify");
 
-        // There are three parts that depend on each other and need to be sorted out in this order:
-        //
-        // 1. Topic prefix
-        // 2. Source
-        // 3. Human readable name
-        //
-        // If the topic prefix contains the device type as the next to last token, then we can derive the source,
-        // ...unless it's been specified elsewhere in the configuration, then we blow up,
-        // ...but if the topic doesn't contain the source, and the source is not specified, we blow up anyway,
-        // ...and only set the name to default (being same as source) if it is not explicitly provided.
+        try {
 
-        String[] result = resolve(topicPrefix);
+            // By this time, all the properties were already set, and they either click together, or blow up
 
-        // Topic prefix may mutate
-        topicPrefix = result[0];
-        source = result[1];
-        name = result[2];
+            // There are three parts that depend on each other and need to be sorted out in this order:
+            //
+            // 1. Topic prefix
+            // 2. Source
+            // 3. Human readable name
+            //
+            // If the topic prefix contains the device type as the next to last token, then we can derive the source,
+            // ...unless it's been specified elsewhere in the configuration, then we blow up,
+            // ...but if the topic doesn't contain the source, and the source is not specified, we blow up anyway,
+            // ...and only set the name to default (being same as source) if it is not explicitly provided.
 
-        // If we made it this far without throwing an exception, everything's good
+            String[] result = resolve(topicPrefix);
+
+            // Topic prefix may mutate
+            topicPrefix = result[0];
+            source = result[1];
+            name = result[2];
+
+            logger.debug("topic={}", topicPrefix);
+            logger.debug("source={}", source);
+            logger.debug("name={}", name);
+
+            // If we made it this far without throwing an exception, everything's good
+
+        } finally {
+            ThreadContext.pop();
+        }
     }
 
     /**
@@ -86,12 +99,7 @@ public abstract class Device implements Verifiable {
             throw new IllegalArgumentException("Can't accept null topic here");
         }
 
-        String[] tokens = topic.split("/");
-
-        // VT: NOTE: We'll go on a limb here and assume that the topic prefix may even be empty -
-        // the source name will be the first token then
-
-        if (tokens.length < 2) {
+        if (!topic.contains(getType().literal)) {
 
             // This means that the device type prefix wasn't specified, and that the source must be specified explicitly
             return resolveShort(topic);
@@ -109,6 +117,8 @@ public abstract class Device implements Verifiable {
      * @return Array of [{@code actual topic prefix}, {@code source}, {@code name}].
      */
     private String[] resolveShort(String topic) {
+
+        logger.debug("short topic: {}", topic);
 
         // The topic doesn't contain the source name, hence the source must be provided
 
@@ -133,6 +143,8 @@ public abstract class Device implements Verifiable {
      * @return Array of [{@code actual topic prefix}, {@code source}, {@code name}].
      */
     private String[] resolveLong(String topic) {
+
+        logger.debug("long topic: {}", topic);
 
         // The topic contains the source name, hence the source must not be provided
 
