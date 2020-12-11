@@ -48,7 +48,7 @@ public class Gateway {
                 return;
             }
 
-            logger.info("configuration: {}",  cf);
+            logger.debug("configuration: {}",  cf);
 
             throw new IllegalStateException("Not Implemented");
 
