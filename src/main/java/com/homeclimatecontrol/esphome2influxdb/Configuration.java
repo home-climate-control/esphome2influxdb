@@ -34,37 +34,29 @@ public class Configuration implements Verifiable {
      */
     public boolean needToStart() {
 
-        try {
-
-            if (!haveSources()) {
-                logger.warn("No sources specified, assuming configuration test run");
-            }
-
-            if (!haveTargets()) {
-                logger.warn("No targets specified, assuming configuration test run");
-            }
-
-            if (!haveDevices()) {
-                logger.warn("No devices specified, assuming configuration test run");
-            }
-
-            if (!haveSources() && !haveTargets() && !haveDevices()) {
-                logger.error("Empty configuration, nothing to do");
-                return false;
-            }
-
-            if (!haveSources() && !haveTargets() && haveDevices()) {
-                logger.error("Just the device configuration found, not starting anything");
-                return false;
-            }
-
-            return true;
-
-        } finally {
-
-            // No matter what happens next, need to make sure the configuration is sane
-            verify();
+        if (!haveSources()) {
+            logger.warn("No sources specified, assuming configuration test run");
         }
+
+        if (!haveTargets()) {
+            logger.warn("No targets specified, assuming configuration test run");
+        }
+
+        if (!haveDevices()) {
+            logger.warn("No devices specified, assuming configuration test run");
+        }
+
+        if (!haveSources() && !haveTargets() && !haveDevices()) {
+            logger.error("Empty configuration, nothing to do");
+            return false;
+        }
+
+        if (!haveSources() && !haveTargets() && haveDevices()) {
+            logger.error("Just the device configuration found, not starting anything");
+            return false;
+        }
+
+        return true;
     }
 
     private boolean haveSources() {

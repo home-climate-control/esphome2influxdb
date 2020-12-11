@@ -59,6 +59,10 @@ public class Gateway {
                 throw new IllegalArgumentException("No usable configuration at " + source + "?");
             }
 
+            cf.verify();
+
+            logger.debug("configuration: {}",  cf);
+
             if (!cf.needToStart()) {
                 logger.info("Terminating");
                 System.exit(0);
