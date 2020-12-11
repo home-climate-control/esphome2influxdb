@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -150,14 +150,14 @@ public class DeviceTest {
             assertEquals("1b0300a279691428", s.name);
             assertEquals(2, s.tags.size());
 
-            Iterator<Entry<String, String>> i = s.tags.entrySet().iterator();
+            Iterator<Map.Entry<String, String>> i = s.tags.entrySet().iterator();
 
-            Entry<String, String> e1 = i.next();
+            Map.Entry<String, String> e1 = i.next();
 
             assertEquals("a", e1.getKey());
             assertEquals("0", e1.getValue());
 
-            Entry<String, String> e2 = i.next();
+            Map.Entry<String, String> e2 = i.next();
 
             assertEquals("z", e2.getKey());
             assertEquals("25", e2.getValue());
