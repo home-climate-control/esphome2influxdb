@@ -82,7 +82,7 @@ public class Endpoint implements Verifiable {
 
     protected void render(StringBuilder sb) {
 
-        sb.append("class=").append(getClass().getSimpleName()).append(",");
+        sb.append("class=").append(getClass().getName()).append(",");
         sb.append("name=").append(getName());
         sb.append("host:port=").append(host).append(":").append(port);
 
