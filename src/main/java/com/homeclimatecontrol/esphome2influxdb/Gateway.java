@@ -37,7 +37,7 @@ public class Gateway {
 
             Configuration cf = parseConfiguration(args[0]);
 
-            throw new IllegalStateException("Not Implemented");
+            execute(cf);
 
         } catch (Throwable t) {
             logger.fatal("Unexpected exception, terminating", t);
@@ -121,5 +121,20 @@ public class Gateway {
     private InputStream getStreamAsURL(String source) throws IOException {
         URL sourceURL = new URL(source);
         return sourceURL.openStream();
+    }
+
+    /**
+     * Execute the given configuration.
+     *
+     * @param cf Configuration to execute.
+     */
+    private void execute(Configuration cf) {
+        ThreadContext.push("parseConfiguration");
+
+        try {
+            throw new IllegalStateException("Not Implemented");
+        } finally {
+            ThreadContext.pop();
+        }
     }
 }
