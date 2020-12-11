@@ -49,29 +49,6 @@ public abstract class Device implements Verifiable {
      */
     public abstract Type getType();
 
-    /**
-     * Resolve device name from the topic.
-     *
-     * @param topic MQTT topic, slash separated.
-     * @return The last token from the source argument.
-     */
-    private String resolveName(String topic) {
-
-        if (topic == null) {
-            throw new IllegalArgumentException("Can't accept null topic here");
-        }
-
-        String[] tokens = topic.split("/");
-        String result = tokens[tokens.length - 1];
-
-        if ("".equals(result)) {
-            // The topic must've been specified with a trailing slash, no big deal
-            result = tokens[tokens.length - 2];
-        }
-
-        return result;
-    }
-
     @Override
     public void verify() {
 
@@ -88,8 +65,127 @@ public abstract class Device implements Verifiable {
         // ...but if the topic doesn't contain the source, and the source is not specified, we blow up anyway,
         // ...and only set the name to default (being same as source) if it is not explicitly provided.
 
-        logger.warn("verify() not implemented for {}", getClass().getName());
+        String[] result = resolve(topicPrefix);
+
+        // Topic prefix may mutate
+        topicPrefix = result[0];
+        source = result[1];
+        name = result[2];
+
+        // If we made it this far without throwing an exception, everything's good
     }
+
+    /**
+     * Resolve the actual topic prefix, the source, and the name, from the topic prefix given.
+     *
+     * @return Array of [{@code actual topic prefix}, {@code source}, {@code name}].
+     */
+    private String[] resolve(String topic) {
+
+        if (topic == null) {
+            throw new IllegalArgumentException("Can't accept null topic here");
+        }
+
+        String[] tokens = topic.split("/");
+
+        // VT: NOTE: We'll go on a limb here and assume that the topic prefix may even be empty -
+        // the source name will be the first token then
+
+        if (tokens.length < 2) {
+
+            // This means that the device type prefix wasn't specified, and that the source must be specified explicitly
+            return resolveShort(topic);
+        }
+
+        return resolveLong(topic);
+    }
+
+    /**
+     * Resolve a short topic name (no device type qualifier) into the
+     * [{@code actual topic prefix}, {@code source}, {@code name}] array.
+     *
+     * @param topic Topic to resolve.
+     *
+     * @return Array of [{@code actual topic prefix}, {@code source}, {@code name}].
+     */
+    private String[] resolveShort(String topic) {
+
+        // The topic doesn't contain the source name, hence the source must be provided
+
+        if (source == null) {
+            throw new IllegalArgumentException("Short topic provided, must specify the source name");
+        }
+
+        if (name == null) {
+
+            name = source;
+        }
+
+        return new String[] { topic, source, name };
+    }
+
+    /**
+     * Resolve a long topic name (including device type qualifier) into the
+     * [{@code actual topic prefix}, {@code source}, {@code name}] array.
+     *
+     * @param topic Topic to resolve.
+     *
+     * @return Array of [{@code actual topic prefix}, {@code source}, {@code name}].
+     */
+    private String[] resolveLong(String topic) {
+
+        // The topic contains the source name, hence the source must not be provided
+
+        if (source != null) {
+            throw new IllegalArgumentException("Long topic provided, must not specify the source name");
+        }
+
+        source = resolveSource(topic);
+
+        if (name == null) {
+
+            name = source;
+        }
+
+        return new String[] { topic, source, name };
+    }
+
+    /**
+     * Resolve device source from the topic.
+     *
+     * @param topic Long MQTT topic (the one that includes the device type qualifier), slash separated.
+     *
+     * @return The last token from the source argument.
+     */
+    private String resolveSource(String topic) {
+
+        if (topic == null) {
+            throw new IllegalArgumentException("Can't accept null topic here");
+        }
+
+        String[] tokens = topic.split("/");
+        String result = tokens[tokens.length - 1];
+        int deviceOffset = 1;
+
+        if ("".equals(result)) {
+            // The topic must've been specified with a trailing slash, no big deal
+            result = tokens[tokens.length - 2];
+            deviceOffset++;
+        }
+
+        // Make sure that we're working with the right device
+        String type = tokens[tokens.length - deviceOffset];
+
+        if (!getType().literal.equals(type)) {
+
+            throw new IllegalArgumentException(
+                    "Wrong topic: expecting '" + getType().literal
+                    + "' as a part of the topic, received '" + type + "' instead");
+        }
+
+        return result;
+    }
+
 
     @Override
     public String toString() {
