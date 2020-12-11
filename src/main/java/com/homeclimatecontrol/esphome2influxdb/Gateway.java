@@ -43,12 +43,12 @@ public class Gateway {
                 throw new IllegalArgumentException("No usable configuration at " + args[0] + "?");
             }
 
-            logger.info("configuration: {}",  cf);
-
             if (!cf.needToStart()) {
                 logger.info("Terminating");
                 return;
             }
+
+            logger.info("configuration: {}",  cf);
 
             throw new IllegalStateException("Not Implemented");
 
