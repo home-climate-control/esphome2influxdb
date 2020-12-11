@@ -1,6 +1,7 @@
 plugins {
     java
     application
+    id("net.ltgt.errorprone") version "1.3.0"
 }
 
 repositories {
@@ -13,6 +14,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:1.27")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    errorprone("com.google.errorprone:error_prone_core:2.4.0")
 }
 
 application {
