@@ -4,6 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -129,10 +132,56 @@ public class Gateway {
      * @param cf Configuration to execute.
      */
     private void execute(Configuration cf) {
-        ThreadContext.push("parseConfiguration");
+        ThreadContext.push("execute");
 
         try {
+
+            CountDownLatch stopGate = new CountDownLatch(1);
+            CountDownLatch stoppedGate = new CountDownLatch(cf.sources.size() + cf.targets.size());
+
+            Set<MqttReader> readers = new LinkedHashSet<>();
+            Set<InfluxDbWriter> writers = new LinkedHashSet<>();
+
+            for (MqttEndpoint e : cf.sources) {
+                readers.add(new MqttReader(e, cf.getDevices(), stopGate, stoppedGate));
+            }
+
+            for (InfluxDbEndpoint e : cf.targets) {
+                writers.add(new InfluxDbWriter(e, readers, stoppedGate));
+            }
+
+            // Preparation is complete, start everything and enjoy the show.
+
+            int roffset = 0;
+            int woffset = 0;
+
+            for (Runnable r : readers) {
+                new Thread(r, "thread-reader" + roffset++).start();
+            }
+
+            logger.info("Started {} reader[s]", readers.size());
+
+            for (Runnable r : writers) {
+                new Thread(r, "thread-writer" + woffset++).start();
+            }
+
+            logger.info("Started {} writer[s]", writers.size());
+
+            // Ctrl-C or SIGTERM are now the only ways to terminate this process.
+
+            stopGate.countDown();
+
+            logger.info("Shutting down");
+
+            stoppedGate.await();
+
+            logger.info("All workers shut down, terminating");
+
             throw new IllegalStateException("Not Implemented");
+
+        } catch (InterruptedException ex) {
+            logger.error("Interrupted, terminating", ex);
+            Thread.currentThread().interrupt();
         } finally {
             ThreadContext.pop();
         }
