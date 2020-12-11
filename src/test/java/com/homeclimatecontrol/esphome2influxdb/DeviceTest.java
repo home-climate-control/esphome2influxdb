@@ -2,6 +2,7 @@ package com.homeclimatecontrol.esphome2influxdb;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +61,64 @@ public class DeviceTest {
 
             assertEquals("1b0300a279691428", s.source);
             assertEquals("1b0300a279691428", s.name);
+
+        } finally {
+            ThreadContext.pop();
+        }
+    }
+
+    @Test
+    public void sensor2() {
+
+        ThreadContext.push("sensor2");
+
+        try {
+
+            Sensor s = yaml.loadAs(
+                    getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor2.yaml"),
+                    Sensor.class);
+
+            logger.info("loaded: {}", s);
+
+            assertNotNull(s);
+            assertEquals("/esphome/67db2c", s.topicPrefix);
+
+            s.verify();
+            fail("should've failed by now");
+
+        } catch (IllegalArgumentException ex) {
+
+            assertEquals("Short topic provided, must specify the source", ex.getMessage());
+            logger.info("passed");
+
+        } finally {
+            ThreadContext.pop();
+        }
+    }
+
+    @Test
+    public void sensor3() {
+
+        ThreadContext.push("sensor3");
+
+        try {
+
+            Sensor s = yaml.loadAs(
+                    getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor3.yaml"),
+                    Sensor.class);
+
+            logger.info("loaded: {}", s);
+
+            assertNotNull(s);
+            assertEquals("/esphome/67db2c/sensor/1b0300a279691428", s.topicPrefix);
+
+            s.verify();
+            fail("should've failed by now");
+
+        } catch (IllegalArgumentException ex) {
+
+            assertEquals("Long topic provided, must not specify the source", ex.getMessage());
+            logger.info("passed");
 
         } finally {
             ThreadContext.pop();

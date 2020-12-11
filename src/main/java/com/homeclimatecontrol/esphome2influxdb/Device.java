@@ -123,7 +123,7 @@ public abstract class Device implements Verifiable {
         // The topic doesn't contain the source name, hence the source must be provided
 
         if (source == null) {
-            throw new IllegalArgumentException("Short topic provided, must specify the source name");
+            throw new IllegalArgumentException("Short topic provided, must specify the source");
         }
 
         if (name == null) {
@@ -149,7 +149,7 @@ public abstract class Device implements Verifiable {
         // The topic contains the source name, hence the source must not be provided
 
         if (source != null) {
-            throw new IllegalArgumentException("Long topic provided, must not specify the source name");
+            throw new IllegalArgumentException("Long topic provided, must not specify the source");
         }
 
         source = resolveSource(topic);

@@ -1,0 +1,4 @@
+# com.homeclimatecontrol.esphome2influxdb.DeviceTest#sensor3()
+topicPrefix: /esphome/67db2c/sensor/1b0300a279691428
+# This will blow up, must not have the source if the topic is long
+source: oops
