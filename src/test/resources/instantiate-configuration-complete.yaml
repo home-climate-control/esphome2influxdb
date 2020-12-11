@@ -11,10 +11,21 @@ targets:
 devices:
   - type: climate
     topicPrefix: /esphome/67db2c
+    source: climate0
+    tags:
+      building: A
+      zone: room0
   
   - type: sensor
-    topicPrefix: /esphome/25c065
+    topicPrefix: /esphome/25c065/sensor/sensor0
+    tags:
+      building: B
+      zone: room1
+      protocol: 1-Wire
+      hardware: DS18B20
   
   - type: switch
-    topicPrefix: /esphome/3f0cf7
-  
+    topicPrefix: /esphome/3f0cf7/switch/switch0
+    tags:
+      protocol: Z-Wave
+      hardware: ZW096
