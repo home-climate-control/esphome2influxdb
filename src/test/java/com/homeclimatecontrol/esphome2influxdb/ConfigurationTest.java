@@ -2,6 +2,7 @@ package com.homeclimatecontrol.esphome2influxdb;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -95,6 +96,8 @@ public class ConfigurationTest {
                 assertEquals("remote-db", remote.db);
             }
 
+            c.verify();
+
         } finally {
             ThreadContext.pop();
         }
@@ -111,6 +114,9 @@ public class ConfigurationTest {
                     getClass().getClassLoader().getResourceAsStream("instantiate-configuration-complete.yaml"));
 
             logger.info("loaded: {}", c);
+
+            // VT: NOTE: This test is just here to validate the YAML in case the other test fails
+            assertTrue(true);
 
         } finally {
             ThreadContext.pop();

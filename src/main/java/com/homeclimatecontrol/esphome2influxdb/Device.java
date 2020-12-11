@@ -12,14 +12,16 @@ public abstract class Device implements Verifiable {
     protected final Logger logger = LogManager.getLogger();
 
     public enum Type {
-        CLIMATE("climate"),
-        SENSOR("sensor"),
-        SWITCH("switch");
+        CLIMATE("climate", Climate.class),
+        SENSOR("sensor", Sensor.class),
+        SWITCH("switch", Switch.class);
 
         public final String literal;
+        public final Class cls;
 
-        private Type(String literal) {
+        private Type(String literal, Class cls) {
             this.literal = literal;
+            this.cls = cls;
         }
     }
 

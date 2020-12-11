@@ -1,10 +1,16 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.yaml.snakeyaml.Yaml;
+
+import com.homeclimatecontrol.esphome2influxdb.Device.Type;
 
 /**
  * Main configuration class.
@@ -16,6 +22,8 @@ public class Configuration implements Verifiable {
     public Set<MqttEndpoint> sources = new LinkedHashSet<>();
     public Set<InfluxDbEndpoint> targets = new LinkedHashSet<>();
     public Set<Object> devices = new LinkedHashSet<>();
+
+    private Set<Device> parsed = new LinkedHashSet<>();
 
     /**
      * Verify the currently loaded configuration.
@@ -88,13 +96,67 @@ public class Configuration implements Verifiable {
             }
         }
 
-        // VT: FIXME: A bit later; need to figure out how to load them right first
+        parseDevices();
 
-//        if (devices != null) {
-//            for (Verifiable v : devices) {
-//                v.verify();
-//            }
-//        }
+        for (Verifiable v : parsed) {
+            v.verify();
+        }
+    }
+
+    private void parseDevices() {
+
+        // No YAML parsers support dynamically typed generic collections without contortions, so
+        // let's dump entries and pull them back by type
+
+        Yaml yaml = new Yaml();
+
+        for (Object o : devices) {
+
+            logger.debug("{}: {}", o.getClass().getName(), o);
+
+            @SuppressWarnings({ "unchecked" })
+            Map<String, String> m = (Map<String, String>) o;
+            String type = m.get("type");
+
+            if (type == null) {
+                throw new IllegalArgumentException("'type' is missing in " + m);
+            }
+
+            Type t;
+
+            try {
+
+                t = Type.valueOf(type.toUpperCase());
+
+            } catch (IllegalArgumentException ex) {
+                throw new IllegalArgumentException("unknown type '" + type + " in " + m, ex);
+            }
+
+            logger.debug("type: {}", t);
+
+            m.remove("type");
+
+            StringWriter sw = new StringWriter();
+
+            yaml.dump(m, sw);
+
+            String dump = sw.toString();
+            logger.debug("YAML:\n{}", dump);
+
+            StringReader sr = new StringReader(dump);
+            @SuppressWarnings("unchecked")
+            Device d = (Device) yaml.loadAs(sr, t.cls);
+
+            logger.debug("parsed: {}",  d);
+
+            parsed.add(d);
+        }
+
+    }
+
+    public Set<Device> getDevices() {
+
+        return parsed;
     }
 
     @Override
@@ -106,7 +168,8 @@ public class Configuration implements Verifiable {
 
         sb.append("sources=").append(sources).append(",");
         sb.append("targets=").append(targets).append(",");
-        sb.append("devices=").append(devices);
+        sb.append("devices/raw=").append(devices);
+        sb.append("devices/parsed=").append(getDevices());
 
         sb.append("}");
 
