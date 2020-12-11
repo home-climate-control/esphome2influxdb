@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -119,6 +122,45 @@ public class DeviceTest {
 
             assertEquals("Long topic provided, must not specify the source", ex.getMessage());
             logger.info("passed");
+
+        } finally {
+            ThreadContext.pop();
+        }
+    }
+
+    @Test
+    public void sensor4() {
+
+        ThreadContext.push("sensor4");
+
+        try {
+
+            Sensor s = yaml.loadAs(
+                    getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor4.yaml"),
+                    Sensor.class);
+
+            logger.info("loaded: {}", s);
+
+            assertNotNull(s);
+            assertEquals("/esphome/67db2c", s.topicPrefix);
+
+            s.verify();
+
+            assertEquals("1b0300a279691428", s.source);
+            assertEquals("1b0300a279691428", s.name);
+            assertEquals(2, s.tags.size());
+
+            Iterator<Entry<String, String>> i = s.tags.entrySet().iterator();
+
+            Entry<String, String> e1 = i.next();
+
+            assertEquals("a", e1.getKey());
+            assertEquals("0", e1.getValue());
+
+            Entry<String, String> e2 = i.next();
+
+            assertEquals("z", e2.getKey());
+            assertEquals("25", e2.getValue());
 
         } finally {
             ThreadContext.pop();
