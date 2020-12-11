@@ -166,10 +166,10 @@ public class Configuration implements Verifiable {
 
         sb.append("{");
 
-        sb.append("sources=").append(sources).append(",");
-        sb.append("targets=").append(targets).append(",");
-        sb.append("devices/raw=").append(devices);
-        sb.append("devices/parsed=").append(getDevices());
+        sb.append("sources=").append(sources);
+        sb.append(",targets=").append(targets);
+        sb.append(",devices/raw=").append(devices);
+        sb.append(",devices/parsed=").append(getDevices());
 
         sb.append("}");
 
