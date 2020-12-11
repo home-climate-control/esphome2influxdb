@@ -81,6 +81,8 @@ public abstract class Device implements Verifiable {
             logger.debug("source={}", source);
             logger.debug("name={}", name);
 
+            logger.debug("tags={}", tags);
+
             // If we made it this far without throwing an exception, everything's good
 
         } finally {
@@ -206,10 +208,20 @@ public abstract class Device implements Verifiable {
 
         sb.append("{");
 
-        sb.append("class=").append(getClass().getName());
+        render(sb);
 
         sb.append("}");
 
         return sb.toString();
+    }
+
+    protected void render(StringBuilder sb) {
+
+        sb.append("class=").append(getClass().getName());
+        sb.append(",topic=").append(topicPrefix);
+        sb.append(",source=").append(source);
+        sb.append(",name=").append(name);
+        sb.append(",type=").append(getType().literal);
+        sb.append(",tags=").append(tags);
     }
 }
