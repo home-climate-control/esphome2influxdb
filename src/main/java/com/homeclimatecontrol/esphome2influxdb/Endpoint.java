@@ -1,6 +1,6 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +31,7 @@ public class Endpoint implements Verifiable {
     @Override
     public void verify() {
 
-        List<String> messages = new LinkedList<>();
+        List<String> messages = new ArrayList<>();
 
         if (host == null || "".equals(host)) {
             messages.add("host can't be null or empty");

@@ -10,8 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
-import com.homeclimatecontrol.esphome2influxdb.Device.Type;
-
 /**
  * Main configuration class.
  */
@@ -122,11 +120,11 @@ public class Configuration implements Verifiable {
                 throw new IllegalArgumentException("'type' is missing in " + m);
             }
 
-            Type t;
+            Device.Type t;
 
             try {
 
-                t = Type.valueOf(type.toUpperCase());
+                t = Device.Type.valueOf(type.toUpperCase());
 
             } catch (IllegalArgumentException ex) {
                 throw new IllegalArgumentException("unknown type '" + type + " in " + m, ex);

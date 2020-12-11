@@ -36,12 +36,12 @@ public abstract class Device implements Verifiable {
     public Map<String, String> tags = new TreeMap<>();
 
     /**
-     * Source device name. Either derived from the {@link #topic MQTT topic}, or specified explicitly.
+     * Source device name. Either derived from the {@link #topicPrefix MQTT topic}, or specified explicitly.
      */
     public String source;
 
     /**
-     * Human readable device name. Either derived from the {@link #topic MQTT topic}, or specified explicitly.
+     * Human readable device name. Either derived from the {@link #topicPrefix MQTT topic}, or specified explicitly.
      */
     public String name;
 
