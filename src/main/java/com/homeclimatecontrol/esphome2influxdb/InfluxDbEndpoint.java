@@ -13,13 +13,6 @@ public class InfluxDbEndpoint extends Endpoint {
     }
 
     @Override
-    public void verify() {
-
-        super.verify();
-        logger.warn("verify() not implemented for {}", getClass().getName());
-    }
-
-    @Override
     protected void render(StringBuilder sb) {
 
         super.render(sb);
