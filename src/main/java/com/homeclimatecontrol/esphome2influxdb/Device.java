@@ -17,9 +17,9 @@ public abstract class Device implements Verifiable {
         SWITCH("switch", Switch.class);
 
         public final String literal;
-        public final Class cls;
+        public final Class<?> cls;
 
-        private Type(String literal, Class cls) {
+        private Type(String literal, Class<?> cls) {
             this.literal = literal;
             this.cls = cls;
         }
