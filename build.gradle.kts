@@ -2,6 +2,7 @@ plugins {
     java
     application
     id("net.ltgt.errorprone") version "1.3.0"
+    jacoco
 }
 
 repositories {
