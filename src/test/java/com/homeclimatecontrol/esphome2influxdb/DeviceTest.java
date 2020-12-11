@@ -32,6 +32,35 @@ public class DeviceTest {
 
             s.verify();
 
+            assertEquals("1b0300a279691428", s.source);
+            assertEquals("1b0300a279691428", s.name);
+
+        } finally {
+            ThreadContext.pop();
+        }
+    }
+
+    @Test
+    public void sensor1() {
+
+        ThreadContext.push("sensor1");
+
+        try {
+
+            Sensor s = yaml.loadAs(
+                    getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor1.yaml"),
+                    Sensor.class);
+
+            logger.info("loaded: {}", s);
+
+            assertNotNull(s);
+            assertEquals("/esphome/67db2c/sensor/1b0300a279691428", s.topicPrefix);
+
+            s.verify();
+
+            assertEquals("1b0300a279691428", s.source);
+            assertEquals("1b0300a279691428", s.name);
+
         } finally {
             ThreadContext.pop();
         }
