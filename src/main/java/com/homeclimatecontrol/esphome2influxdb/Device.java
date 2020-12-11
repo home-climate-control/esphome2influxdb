@@ -27,6 +27,9 @@ public abstract class Device implements Verifiable {
 
     /**
      * MQTT topic prefix to read updates from.
+     *
+     * Unlike {@link MqttEndpoint#topic} filter which is passed to
+     * {@link MqttReader}, this filter will be applied locally.
      */
     public String topicPrefix;
 

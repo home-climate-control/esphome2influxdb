@@ -98,7 +98,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
         client.setCallback(this);
         client.connect(options);
 
-        client.subscribe("#", 0);
+        client.subscribe(endpoint.topic, 0);
     }
 
     @Override
