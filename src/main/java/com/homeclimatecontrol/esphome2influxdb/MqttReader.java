@@ -1,5 +1,7 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -22,8 +24,10 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
     /**
      * Devices to listen to.
+     *
+     * The key is the topic, the value is the device descriptor.
      */
-    private final Set<Device> devices;
+    private final Map<String, Device> devices;
 
     /**
      * VT: FIXME: Provide an ability to generate and keep a persistent UUID
@@ -35,7 +39,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
     public MqttReader(MqttEndpoint e, Set<Device> devices, CountDownLatch stopGate, CountDownLatch stoppedGate) {
         super(e, stoppedGate);
 
-        this.devices = devices;
+        this.devices = parseTopic(devices);
         this.stopGate = stopGate;
 
         try {
@@ -52,6 +56,19 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
         } catch (MqttException ex) {
             throw new IllegalStateException("Failed to create a client for " + endpoint);
         }
+    }
+
+    private Map<String, Device> parseTopic(Set<Device> source) {
+
+        Map<String, Device> result = new LinkedHashMap<>();
+
+        for (Device d : source) {
+            result.put(
+                    d.topicPrefix + "/" + d.getType().literal + "/" + d.source,
+                    d);
+        }
+
+        return result;
     }
 
     @Override
@@ -116,7 +133,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
             logger.debug("topic={}, message={}", topic, payload);
 
-            for (Device d : devices) {
+            for (Map.Entry<String, Device> d : devices.entrySet()) {
 
                 // Only the first match is considered, any other way doesn't make sense
 
@@ -133,21 +150,21 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
     /**
      * Consume an MQTT message.
      *
-     * @param device Device descriptor.
+     * @param d Device descriptor.
      * @param topic MQTT topic.
      * @param payload MQTT message payload.
      *
      * @return {@code true} if the message was consumed.
      */
-    private boolean consume(Device device, String topic, String payload) {
+    private boolean consume(Map.Entry<String, Device> d, String topic, String payload) {
 
-        String match = device.topicPrefix + "/" + device.getType().literal + "/" + device.source;
-
-        if (!topic.startsWith(match)) {
+        if (!topic.startsWith(d.getKey())) {
             return false;
         }
 
-        logger.warn("match: {}", device.name);
+        logger.warn("match: {}", d.getValue().name);
+        logger.info("payload: {}", payload);
+
         return true;
     }
 
