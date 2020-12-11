@@ -35,27 +35,41 @@ public class Gateway {
                 System.exit(-1);
             }
 
+            Configuration cf = parseConfiguration(args[0]);
+
+            throw new IllegalStateException("Not Implemented");
+
+        } catch (Throwable t) {
+            logger.fatal("Unexpected exception, terminating", t);
+        } finally {
+            ThreadContext.pop();
+        }
+    }
+
+    private Configuration parseConfiguration(String source) {
+        ThreadContext.push("parseConfiguration");
+
+        try {
+
             Yaml yaml = new Yaml();
 
-            Configuration cf = yaml.loadAs(getStream(args[0]), Configuration.class);
+            Configuration cf = yaml.loadAs(getStream(source), Configuration.class);
 
             if (cf == null) {
-                throw new IllegalArgumentException("No usable configuration at " + args[0] + "?");
+                throw new IllegalArgumentException("No usable configuration at " + source + "?");
             }
 
             if (!cf.needToStart()) {
                 logger.info("Terminating");
-                return;
+                System.exit(0);
             }
 
-            logger.debug("configuration: {}",  cf);
-
-            throw new IllegalStateException("Not Implemented");
+            return cf;
 
         } catch (ScannerException ex) {
-            logger.fatal("Malformed YAML while parsing {}", args[0], ex);
+            throw new IllegalArgumentException("Malformed YAML while parsing " + source, ex);
         } catch (Throwable t) {
-            logger.fatal("Unexpected exception while parsing {}", args[0],  t);
+            throw new IllegalArgumentException("Unexpected exception while parsing " + source,  t);
         } finally {
             ThreadContext.pop();
         }
