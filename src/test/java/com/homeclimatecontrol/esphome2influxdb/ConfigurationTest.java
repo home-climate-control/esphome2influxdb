@@ -18,9 +18,9 @@ public class ConfigurationTest {
     private final Yaml yaml = new Yaml();
 
     @Test
-    public void sources0() {
+    public void configuration0() {
 
-        ThreadContext.push("sources0");
+        ThreadContext.push("configuration0");
 
         try {
 
@@ -38,9 +38,9 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void sources1() {
+    public void configuration1() {
 
-        ThreadContext.push("sources1");
+        ThreadContext.push("configuration1");
 
         try {
 
