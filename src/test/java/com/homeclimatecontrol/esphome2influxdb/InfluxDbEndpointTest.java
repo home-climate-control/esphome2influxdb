@@ -3,6 +3,9 @@ package com.homeclimatecontrol.esphome2influxdb;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -83,6 +86,26 @@ public class InfluxDbEndpointTest {
         assertEquals("localhost", e.host);
         assertEquals(9999, e.getPort());
         assertEquals("localhost:9999", e.getName());
+
+        // Defaults
+
+        assertNull(e.username);
+        assertNull(e.password);
+    }
+
+    @Test
+    public void influxDbEndpoint4() throws MalformedURLException {
+
+        InfluxDbEndpoint e = yaml.loadAs(
+                getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-4.yaml"),
+                InfluxDbEndpoint.class);
+
+        logger.info("loaded: {}", e);
+
+        assertEquals("remote-host", e.host);
+        assertEquals(1111, e.getPort());
+        assertEquals("remote-host:1111", e.getName());
+        assertEquals(new URL("http://remote-host:1111/").toString(), e.getUrl());
 
         // Defaults
 

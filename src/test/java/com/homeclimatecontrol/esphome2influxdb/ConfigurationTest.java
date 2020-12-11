@@ -78,7 +78,7 @@ public class ConfigurationTest {
 
             Set<InfluxDbEndpoint> targets = c.targets;
 
-            assertEquals(2, targets.size());
+            assertEquals(3, targets.size());
 
             {
                 Iterator<InfluxDbEndpoint> i = targets.iterator();
@@ -94,6 +94,12 @@ public class ConfigurationTest {
                 assertEquals("remote", remote.host);
                 assertEquals(9999, remote.getPort());
                 assertEquals("remote-db", remote.db);
+
+                InfluxDbEndpoint backup = i.next();
+
+                assertEquals("backup", backup.host);
+                assertEquals(1111, backup.getPort());
+                assertEquals("backup-db", backup.db);
             }
 
             c.verify();

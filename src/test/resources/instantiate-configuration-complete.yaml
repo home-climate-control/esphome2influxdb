@@ -7,6 +7,8 @@ targets:
   - host: remote
     db: remote-db
     port: 9999
+  - url: http://backup:1111/
+    db: backup-db
   
 devices:
   - type: climate
