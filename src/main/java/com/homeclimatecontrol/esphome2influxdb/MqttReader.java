@@ -112,11 +112,43 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
         try {
 
-            logger.debug("topic={}, message={}", topic, message.toString());
+            String payload = message.toString();
+
+            logger.debug("topic={}, message={}", topic, payload);
+
+            for (Device d : devices) {
+
+                // Only the first match is considered, any other way doesn't make sense
+
+                if (consume(d, topic, payload)) {
+                    break;
+                }
+            }
 
         } finally {
             ThreadContext.pop();
         }
+    }
+
+    /**
+     * Consume an MQTT message.
+     *
+     * @param device Device descriptor.
+     * @param topic MQTT topic.
+     * @param payload MQTT message payload.
+     *
+     * @return {@code true} if the message was consumed.
+     */
+    private boolean consume(Device device, String topic, String payload) {
+
+        String match = device.topicPrefix + "/" + device.getType().literal + "/" + device.source;
+
+        if (!topic.startsWith(match)) {
+            return false;
+        }
+
+        logger.warn("match: {}", device.name);
+        return true;
     }
 
     @Override
