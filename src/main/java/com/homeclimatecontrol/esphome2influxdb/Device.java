@@ -79,11 +79,11 @@ public abstract class Device implements Verifiable {
             source = result[1];
             name = result[2];
 
-            logger.debug("topic={}", topicPrefix);
-            logger.debug("source={}", source);
-            logger.debug("name={}", name);
+            logger.trace("topic={}", topicPrefix);
+            logger.trace("source={}", source);
+            logger.trace("name={}", name);
 
-            logger.debug("tags={}", tags);
+            logger.trace("tags={}", tags);
 
             // If we made it this far without throwing an exception, everything's good
 
@@ -122,7 +122,7 @@ public abstract class Device implements Verifiable {
      */
     private String[] resolveShort(String topic) {
 
-        logger.debug("short topic: {}", topic);
+        logger.trace("short topic: {}", topic);
 
         // The topic doesn't contain the source name, hence the source must be provided
 
@@ -148,7 +148,7 @@ public abstract class Device implements Verifiable {
      */
     private String[] resolveLong(String topic) {
 
-        logger.debug("long topic: {}", topic);
+        logger.trace("long topic: {}", topic);
 
         // The topic contains the source name, hence the source must not be provided
 

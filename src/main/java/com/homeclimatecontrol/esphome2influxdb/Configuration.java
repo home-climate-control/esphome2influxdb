@@ -112,7 +112,7 @@ public class Configuration implements Verifiable {
 
         for (Object o : devices) {
 
-            logger.debug("{}: {}", o.getClass().getName(), o);
+            logger.trace("{}: {}", o.getClass().getName(), o);
 
             @SuppressWarnings({ "unchecked" })
             Map<String, String> m = (Map<String, String>) o;
@@ -132,7 +132,7 @@ public class Configuration implements Verifiable {
                 throw new IllegalArgumentException("unknown type '" + type + " in " + m, ex);
             }
 
-            logger.debug("type: {}", t);
+            logger.trace("type: {}", t);
 
             m.remove("type");
 
@@ -141,13 +141,13 @@ public class Configuration implements Verifiable {
             yaml.dump(m, sw);
 
             String dump = sw.toString();
-            logger.debug("YAML:\n{}", dump);
+            logger.trace("YAML:\n{}", dump);
 
             StringReader sr = new StringReader(dump);
             @SuppressWarnings("unchecked")
             Device d = (Device) yaml.loadAs(sr, t.cls);
 
-            logger.debug("parsed: {}",  d);
+            logger.trace("parsed: {}",  d);
 
             parsed.add(d);
         }
