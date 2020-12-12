@@ -1,6 +1,8 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import java.time.Clock;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -17,6 +19,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
+    private Clock clock = Clock.systemDefaultZone();
+
     /**
      * The latch indicating the need to stop operation.
      */
@@ -28,6 +32,8 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
      * The key is the topic, the value is the device descriptor.
      */
     private final Map<String, Device> devices;
+
+    private final Set<InfluxDbWriter> writers = new LinkedHashSet<>();
 
     /**
      * VT: FIXME: Provide an ability to generate and keep a persistent UUID
@@ -162,8 +168,14 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
             return false;
         }
 
-        logger.warn("match: {}", d.getValue().name);
-        logger.info("payload: {}", payload);
+        logger.debug("match: {}", d.getValue().name);
+
+        // Let's generate the timestamp once so that several writers get the same
+        long timestamp = clock.instant().toEpochMilli();
+
+        for (InfluxDbWriter w : writers) {
+            w.consume(timestamp, d.getValue(), payload);
+        }
 
         return true;
     }
@@ -171,5 +183,9 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
         // VT: NOTE: Nothing to do here, we're not sending anything
+    }
+
+    public void attach(InfluxDbWriter writer) {
+        writers.add(writer);
     }
 }

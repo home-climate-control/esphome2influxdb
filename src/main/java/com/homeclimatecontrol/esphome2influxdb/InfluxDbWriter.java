@@ -2,8 +2,11 @@ package com.homeclimatecontrol.esphome2influxdb;
 
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.ThreadContext;
+import org.influxdb.dto.Point;
+import org.influxdb.dto.Point.Builder;
 
 public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
 
@@ -24,6 +27,22 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
         } finally {
             stoppedGate.countDown();
             logger.info("Shut down");
+            ThreadContext.pop();
+        }
+    }
+
+    public void consume(long timestamp, Device device, String payload) {
+        ThreadContext.push("run");
+
+        try {
+            logger.info("payload: {}", payload);
+
+            Builder b = Point.measurement(device.getType().literal)
+                    .time(timestamp, TimeUnit.MILLISECONDS)
+                    .tag(device.tags)
+                    .addField("sample", payload);
+
+        } finally {
             ThreadContext.pop();
         }
     }
