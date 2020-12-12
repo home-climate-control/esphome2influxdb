@@ -170,8 +170,11 @@ public class Gateway {
             // Ctrl-C or SIGTERM are now the only ways to terminate this process.
 
             // VT: FIXME: Implement the rest of the lifecycle
-
-            Thread.sleep(60000);
+            if (true) {
+                while (true) {
+                    Thread.sleep(60000);
+                }
+            }
 
             stopGate.countDown();
 

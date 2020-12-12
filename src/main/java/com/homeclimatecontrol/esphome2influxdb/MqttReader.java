@@ -19,7 +19,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
-    private Clock clock = Clock.systemDefaultZone();
+    private final Clock clock = Clock.systemUTC();
 
     /**
      * The latch indicating the need to stop operation.
