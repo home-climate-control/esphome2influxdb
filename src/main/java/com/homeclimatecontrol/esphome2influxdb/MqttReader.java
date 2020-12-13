@@ -166,12 +166,18 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
      */
     boolean consume(Map.Entry<String, Device> d, String topic, String payload, Set<InfluxDbWriter> writers) {
 
+        // Save ourselves extra memory allocation
         if (!topic.startsWith(d.getKey())) {
             return false;
         }
 
-        logger.debug("match/key:   {}", d.getKey());
-        logger.debug("match/topic: {}", topic);
+        // Dodge https://github.com/home-climate-control/esphome2influxdb/issues/1
+        // The price is one memory allocation per matching substring per message
+        if (!topic.equals(d.getKey() + "/state")) {
+            // Close, but no cigar
+            return false;
+        }
+
         logger.debug("match: {}", d.getValue().name);
 
         // Let's generate the timestamp once so that several writers get the same
