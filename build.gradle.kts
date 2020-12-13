@@ -23,6 +23,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.6.28")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
     errorprone("com.google.errorprone:error_prone_core:2.4.0")
+    errorproneJavac("com.google.errorprone:javac:2.4.0")
 }
 
 application {
