@@ -1,6 +1,7 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
 import java.time.Clock;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
     private final IMqttClient client;
 
-    public MqttReader(MqttEndpoint e, Set<Device> devices, CountDownLatch stopGate, CountDownLatch stoppedGate) {
+    public MqttReader(MqttEndpoint e, Collection<Device> devices, CountDownLatch stopGate, CountDownLatch stoppedGate) {
         super(e, stoppedGate);
 
         this.devices = parseTopic(devices);
@@ -64,7 +65,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
         }
     }
 
-    private Map<String, Device> parseTopic(Set<Device> source) {
+    private Map<String, Device> parseTopic(Collection<Device> source) {
 
         Map<String, Device> result = new LinkedHashMap<>();
 
@@ -169,6 +170,8 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
             return false;
         }
 
+        logger.debug("match/key:   {}", d.getKey());
+        logger.debug("match/topic: {}", topic);
         logger.debug("match: {}", d.getValue().name);
 
         // Let's generate the timestamp once so that several writers get the same
