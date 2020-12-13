@@ -143,7 +143,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
                 // Only the first match is considered, any other way doesn't make sense
 
-                if (consume(d, topic, payload)) {
+                if (consume(d, topic, payload, writers)) {
                     break;
                 }
             }
@@ -159,10 +159,11 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
      * @param d Device descriptor.
      * @param topic MQTT topic.
      * @param payload MQTT message payload.
+     * @param writers InfluxDB writers to pass the message to.
      *
      * @return {@code true} if the message was consumed.
      */
-    private boolean consume(Map.Entry<String, Device> d, String topic, String payload) {
+    boolean consume(Map.Entry<String, Device> d, String topic, String payload, Set<InfluxDbWriter> writers) {
 
         if (!topic.startsWith(d.getKey())) {
             return false;
