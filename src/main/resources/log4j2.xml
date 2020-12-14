@@ -1,13 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <Console name="CONSOLE" target="SYSTEM_OUT">
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss,SSS} %level %class{1} %t %NDC %message%n}"/>
+            <Filters>
+                <!-- Set your comfortable debug level for the console log. -->
+                <ThresholdFilter level="info"  onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
         </Console>
+        <!-- Use 'less -R to view files with ANSI highlighting -->
+        <RollingFile
+            name="DebugAppender"
+            fileName="logs/esphome2influxdb-debug.log"
+            filePattern="esphome2influxdb-debug.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss,SSS} %level %class{1} %t %NDC %message%n}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <Filters>
+                <!-- Set your comfortable debug level for the debug log. Best be left as is.-->
+                <ThresholdFilter level="trace"  onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+        <RollingFile
+            name="WarnAppender"
+            fileName="logs/esphome2influxdb-warn.log"
+            filePattern="esphome2influxdb-warn.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss,SSS} %level %class{1} %t %NDC %message%n}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <Filters>
+                <!-- Set your comfortable debug level for the long term log. -->
+                <ThresholdFilter level="warn"  onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+    </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="DEBUG">
-            <AppenderRef ref="CONSOLE"/>
+        <Root level="TRACE">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="WarnAppender"/>
+            <AppenderRef ref="DebugAppender"/>
         </Root>
     </Loggers>
 </Configuration>
