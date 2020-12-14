@@ -1,0 +1,8 @@
+# Default configuration using unauthenticated MQTT broker and InfluxDB running on localhost, and no devices.
+# This configuration will work when running esphome2influxdb raw, but will be useless in Docker (localhost, eh?)
+
+sources:
+  - host: localhost
+
+targets:
+  - host: localhost
