@@ -130,7 +130,14 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
     @Override
     public void connectionLost(Throwable cause) {
-        logger.error("lost connection", cause);
+        logger.error("Lost connection", cause);
+        logger.info("Attempting to reconnect");
+        try {
+            // VT: NOTE: This may not be enough, let's see how reliable this is
+            connect();
+        } catch (MqttException ex) {
+            logger.fatal("Reconnect failed, giving up", ex);
+        }
     }
 
     @Override
