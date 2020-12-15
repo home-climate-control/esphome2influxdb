@@ -6,8 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.ThreadContext;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
@@ -140,24 +143,10 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
             logger.debug("topic={}, message={}", topic, payload);
 
-            autodiscover(topic);
-            consume(topic, payload);
+            if (!consume(topic, payload)) {
+                autodiscover(topic, payload);
+            }
 
-        } finally {
-            ThreadContext.pop();
-        }
-    }
-
-    /**
-     * Autodiscover devices not specified in the configuration.
-     *
-     * @param topic MQTT topic.
-     */
-    private void autodiscover(String topic) {
-        ThreadContext.push("autodiscover");
-        try {
-
-            logger.debug("NOT IMPLEMENTED");
 
         } finally {
             ThreadContext.pop();
@@ -169,17 +158,21 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
      *
      * @param topic MQTT topic.
      * @param payload MQTT message payload.
+     *
+     * @return {@code true} if the message was consumed.
      */
-    private void consume(String topic, String payload) {
+    private boolean consume(String topic, String payload) {
 
         for (Map.Entry<String, Device> d : devices.entrySet()) {
 
             // Only the first match is considered, any other way doesn't make sense
 
             if (consume(d, topic, payload, writers)) {
-                break;
+                return true;
             }
         }
+
+        return false;
     }
 
     /**
@@ -216,6 +209,52 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
         }
 
         return true;
+    }
+
+    static Pattern patternClimate = Pattern.compile("(.*)/climate/(.*)/mode/state");
+    static Pattern patternSensor = Pattern.compile("(.*)/sensor/(.*)/state");
+    static Pattern patternSwitch = Pattern.compile("(.*)/switch/(.*)/state");
+
+    Set<String> knownTopics = new LinkedHashSet<>();
+    Set<String> autodiscovered = new TreeSet<>();
+
+    /**
+     * Autodiscover devices not specified in the configuration.
+     *
+     * @param topic MQTT topic.
+     */
+    private void autodiscover(String topic, String payload) {
+        ThreadContext.push("autodiscover");
+        try {
+
+            if (knownTopics.contains(topic)) {
+                // No sense mulling it over again
+                return;
+            }
+
+            knownTopics.add(topic);
+
+            logger.debug("candidate: {}", topic);
+
+            // VT: FIXME: Just the sensor for now
+
+            Matcher m = patternSensor.matcher(topic);
+
+            if (m.matches()) {
+
+                String topicPrefix = m.group(1);
+                String name = m.group(2);
+
+                if (!autodiscovered.contains(name)) {
+
+                    logger.warn("Sensor {} at {} (FIXME)", name, topicPrefix);
+                    autodiscovered.add(name);
+                }
+            }
+
+        } finally {
+            ThreadContext.pop();
+        }
     }
 
     @Override
