@@ -140,14 +140,24 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
             logger.debug("topic={}, message={}", topic, payload);
 
-            for (Map.Entry<String, Device> d : devices.entrySet()) {
+            autodiscover(topic);
+            consume(topic, payload);
 
-                // Only the first match is considered, any other way doesn't make sense
+        } finally {
+            ThreadContext.pop();
+        }
+    }
 
-                if (consume(d, topic, payload, writers)) {
-                    break;
-                }
-            }
+    /**
+     * Autodiscover devices not specified in the configuration.
+     *
+     * @param topic MQTT topic.
+     */
+    private void autodiscover(String topic) {
+        ThreadContext.push("autodiscover");
+        try {
+
+            logger.debug("NOT IMPLEMENTED");
 
         } finally {
             ThreadContext.pop();
@@ -156,6 +166,24 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
     /**
      * Consume an MQTT message.
+     *
+     * @param topic MQTT topic.
+     * @param payload MQTT message payload.
+     */
+    private void consume(String topic, String payload) {
+
+        for (Map.Entry<String, Device> d : devices.entrySet()) {
+
+            // Only the first match is considered, any other way doesn't make sense
+
+            if (consume(d, topic, payload, writers)) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Consume an MQTT message if the device matches.
      *
      * @param d Device descriptor.
      * @param topic MQTT topic.
