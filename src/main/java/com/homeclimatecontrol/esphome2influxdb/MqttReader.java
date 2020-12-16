@@ -230,6 +230,8 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
      * Autodiscover devices not specified in the configuration.
      *
      * @param topic MQTT topic.
+     * @param payload MQTT message payload (VT: FIXME: unused now,
+     * but will be used later when autodiscovered devices will be activated immediately)
      */
     private void autodiscover(String topic, String payload) {
         ThreadContext.push("autodiscover");
