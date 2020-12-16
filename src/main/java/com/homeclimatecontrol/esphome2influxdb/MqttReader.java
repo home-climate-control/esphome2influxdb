@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
@@ -223,7 +223,8 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
     static Pattern patternSwitch = Pattern.compile("(.*)/switch/(.*)/state");
 
     Set<String> knownTopics = new LinkedHashSet<>();
-    Set<String> autodiscovered = new TreeSet<>();
+    Map<String, String> autodiscovered = new TreeMap<>();
+    Set<Device> autodiscoveredDevices = new LinkedHashSet<>();
 
     /**
      * Autodiscover devices not specified in the configuration.
@@ -252,16 +253,37 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
                 String topicPrefix = m.group(1);
                 String name = m.group(2);
 
-                if (!autodiscovered.contains(name)) {
+                if (!autodiscovered.containsKey(name)) {
 
-                    logger.warn("Sensor {} at {} (FIXME)", name, topicPrefix);
-                    autodiscovered.add(name);
+                    logger.info("Found sensor {} at {} (FIXME)", name, topicPrefix);
+                    autodiscovered.put(name, topicPrefix);
+
+                    renderSensor(name, topicPrefix);
                 }
             }
 
         } finally {
             ThreadContext.pop();
         }
+    }
+
+    /**
+     * Render a YAML configuration snippet for the given source and topic prefix.
+     *
+     * @param source Sensor source.
+     * @param topicPrefix Sensor topic prefix.
+     */
+    private void renderSensor(String source, String topicPrefix) {
+
+        // It's simpler to just dump a string literal into the log then to fiddle with YAML here.
+
+        logger.info("YAML configuration snippet (preserve the spaces):\n"
+                + "  - type: sensor\n"
+                + "    topicPrefix: {}\n"
+                + "    source: {}\n"
+                + "    tags: {} # put your tags here",
+                topicPrefix, source);
+
     }
 
     @Override
