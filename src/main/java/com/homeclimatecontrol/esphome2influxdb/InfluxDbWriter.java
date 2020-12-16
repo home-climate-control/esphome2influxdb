@@ -143,6 +143,7 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
                         Point.Builder b = Point.measurement(device.getType().literal)
                                 .time(sample.timestamp, TimeUnit.MILLISECONDS)
                                 .tag("source", device.source)
+                                .tag("name", device.name)
                                 .tag(sample.device.tags)
                                 .addField("sample", new BigDecimal(sample.payload));
 
