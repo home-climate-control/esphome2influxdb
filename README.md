@@ -1,5 +1,4 @@
-# esphome2influxdb
-## ESPHome to InfluxDB Gateway
+# ESPHome to InfluxDB Gateway
 
 Execute `./gradlew installDist` to get an executable shell script,  
 and run `./build/install/esphome2influxdb/bin/esphome2influxdb ${your-config-file}.yaml`.
@@ -10,3 +9,5 @@ docker run --name=esphome2influxdb \
   -v ${your-config-directory}:/app/conf \
   -v ${your-logs-directory}:/app/logs esphome2influxdb
 ```
+
+For further details, see [esphome2influxdb Wiki](https://github.com/home-climate-control/esphome2influxdb/wiki).
