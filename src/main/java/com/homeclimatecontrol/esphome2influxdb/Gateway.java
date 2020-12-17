@@ -143,7 +143,7 @@ public class Gateway {
             Set<InfluxDbWriter> writers = new LinkedHashSet<>();
 
             for (MqttEndpoint e : cf.sources) {
-                readers.add(new MqttReader(e, cf.getDevices(), stopGate, stoppedGate));
+                readers.add(new MqttReader(e, cf.getDevices(), cf.autodiscover, stopGate, stoppedGate));
             }
 
             for (InfluxDbEndpoint e : cf.targets) {

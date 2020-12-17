@@ -17,6 +17,7 @@ public class Configuration implements Verifiable {
 
     private final Logger logger = LogManager.getLogger();
 
+    public boolean autodiscover = true;
     public Set<MqttEndpoint> sources = new LinkedHashSet<>();
     public Set<InfluxDbEndpoint> targets = new LinkedHashSet<>();
     public Set<Object> devices = new LinkedHashSet<>();
@@ -42,8 +43,8 @@ public class Configuration implements Verifiable {
             logger.warn("No targets specified, assuming configuration test run");
         }
 
-        if (!haveDevices()) {
-            logger.warn("No devices specified, assuming configuration test run");
+        if (!haveDevices() && !autodiscover) {
+            logger.warn("No devices specified, autodiscovery disabled, assuming configuration test run");
         }
 
         if (!haveSources() && !haveTargets() && !haveDevices()) {

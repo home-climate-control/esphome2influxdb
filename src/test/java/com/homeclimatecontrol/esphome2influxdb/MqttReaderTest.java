@@ -45,7 +45,7 @@ public class MqttReaderTest {
         CountDownLatch stopGate = new CountDownLatch(1);
         CountDownLatch stoppedGate = new CountDownLatch(1);
 
-        MqttReader r = new MqttReader(e, devices.values(), stopGate, stoppedGate);
+        MqttReader r = new MqttReader(e, devices.values(), false, stopGate, stoppedGate);
 
         Set<InfluxDbWriter> writers = new LinkedHashSet<>();
 

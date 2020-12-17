@@ -25,6 +25,8 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
     private final Clock clock = Clock.systemUTC();
 
+    private final boolean autodiscover;
+
     /**
      * The latch indicating the need to stop operation.
      */
@@ -46,10 +48,20 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
     private final IMqttClient client;
 
-    public MqttReader(MqttEndpoint e, Collection<Device> devices, CountDownLatch stopGate, CountDownLatch stoppedGate) {
+    /**
+     * Create an instance.
+     *
+     * @param e Endpoint configuration to connect to.
+     * @param devices Set of previously configured devices to render the feed for.
+     * @param autodiscover {@code true} if newly discovered devices get their own feed automatically.
+     * @param stopGate Semaphore to listen to to initiate shutdown.
+     * @param stoppedGate Semaphore to count down when the shutdown is complete.
+     */
+    public MqttReader(MqttEndpoint e, Collection<Device> devices, boolean autodiscover, CountDownLatch stopGate, CountDownLatch stoppedGate) {
         super(e, stoppedGate);
 
         this.devices = parseTopic(devices);
+        this.autodiscover = autodiscover;
         this.stopGate = stopGate;
 
         try {
@@ -229,6 +241,9 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
     /**
      * Autodiscover devices not specified in the configuration.
      *
+     * Note: autodiscovery will be performed always, but newly discovered devices will
+     * only get their feed created if {@link #autodiscover} is {@code true}.
+     *
      * @param topic MQTT topic.
      * @param payload MQTT message payload (VT: FIXME: unused now,
      * but will be used later when autodiscovered devices will be activated immediately)
@@ -257,10 +272,29 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
                 if (!autodiscovered.containsKey(name)) {
 
-                    logger.info("Found sensor {} at {} (FIXME)", name, topicPrefix);
+                    logger.info("Found sensor {} at {}", name, topicPrefix);
                     autodiscovered.put(name, topicPrefix);
 
-                    renderSensor(name, topicPrefix);
+                    if (autodiscover) {
+
+                        Sensor s = new Sensor(topicPrefix, name);
+
+                        s.verify();
+
+                        devices.put(topicPrefix + "/sensor/" + name, s);
+
+                        renderSensorConfiguration(
+                                "Starting the feed. You will still have to provide configuration for extra tags, snippet",
+                                name,
+                                topicPrefix);
+
+                    } else {
+
+                        renderSensorConfiguration(
+                                "Autodiscovery is disabled, not creating a feed. Add this snippet to the configuration to create it",
+                                name,
+                                topicPrefix);
+                    }
                 }
             }
 
@@ -270,22 +304,22 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
     }
 
     /**
-     * Render a YAML configuration snippet for the given source and topic prefix.
+     * Render a YAML configuration snippet for the given source and topic prefix into the log.
      *
+     * @param message Log message to provide.
      * @param source Sensor source.
      * @param topicPrefix Sensor topic prefix.
      */
-    private void renderSensor(String source, String topicPrefix) {
+    private void renderSensorConfiguration(String message, String source, String topicPrefix) {
 
         // It's simpler to just dump a string literal into the log then to fiddle with YAML here.
 
-        logger.info("YAML configuration snippet (preserve the spaces):\n"
+        logger.info("{}:\n"
                 + "  - type: sensor\n"
                 + "    topicPrefix: {}\n"
                 + "    source: {}\n"
                 + "    tags: {} # put your tags here",
-                topicPrefix, source);
-
+                message, topicPrefix, source);
     }
 
     @Override
