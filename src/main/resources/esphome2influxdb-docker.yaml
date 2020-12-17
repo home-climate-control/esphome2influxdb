@@ -1,6 +1,9 @@
 # Default configuration using unauthenticated MQTT broker on 'mqtt' host,
 # and InfluxDB running on 'influxdb' host,
-# and no devices.
+# and autodiscovered devices only.
+
+# Autodiscovery is enabled by default, so all new devices will generate InfluxDB series,
+# but you still need to configure your custom tags.
 
 # This configuration will work both when running esphome2influxdb raw, and in Docker,
 # assuming these hosts do in fact exist, run these services, and are resolvable
