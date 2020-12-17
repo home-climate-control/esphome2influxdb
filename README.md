@@ -2,7 +2,7 @@
 
 ## Why?
 
-To get the [tagging](https://github.com/home-climate-control/esphome2influxdb/wiki/Tagging) right.
+To get the [tagging](https://github.com/home-climate-control/esphome2influxdb/wiki/Tagging) right, in a lightweight package.
 
 ## How?
 
