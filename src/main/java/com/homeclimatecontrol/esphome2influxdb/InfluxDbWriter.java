@@ -176,7 +176,7 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
         db.flush();
     }
 
-    private static class Sample {
+    static class Sample {
 
         public final long timestamp;
         public final Device device;
