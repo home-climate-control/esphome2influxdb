@@ -126,46 +126,54 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
                 }
             }
 
-            // It is possible for more than one thread to call consume() a the same time,
-            // MQTT receiver callbacks are asynchronous
-
-            synchronized (this) {
-
-                while (!queue.isEmpty()) {
-
-                    try {
-
-                        Sample sample = queue.peek();
-
-                        // VT: FIXME: This will only work for a sensor; need to change sample semantics
-                        // for other device types
-
-                        Point.Builder b = Point.measurement(device.getType().literal)
-                                .time(sample.timestamp, TimeUnit.MILLISECONDS)
-                                .tag("source", device.source)
-                                .tag("name", device.name)
-                                .tag(sample.device.tags)
-                                .addField("sample", new BigDecimal(sample.payload));
-
-                        db.write(b.build());
-
-                        queue.remove();
-
-                    } catch (Throwable t) {
-
-                        // The item we couldn't write is still in the queue
-
-                        logger.warn("can't write sample, deferring remaining " + queue.size() + " samples for now", t);
-                        break;
-                    }
-                }
-
-                db.flush();
-            }
+            flush(db, queue);
 
         } finally {
             ThreadContext.pop();
         }
+    }
+
+    /**
+     * Flush the queue content.
+     *
+     * It is possible for more than one thread to call consume() a the same time,
+     * MQTT receiver callbacks are asynchronous, hence synchronized modifier.
+     *
+     * @param db Writer to write to.
+     * @param queue Queue to flush.
+     */
+    synchronized void flush(InfluxDB db, Queue<Sample> queue) {
+
+        while (!queue.isEmpty()) {
+
+            try {
+
+                Sample sample = queue.peek();
+
+                // VT: FIXME: This will only work for a sensor; need to change sample semantics
+                // for other device types
+
+                Point.Builder b = Point.measurement(sample.device.getType().literal)
+                        .time(sample.timestamp, TimeUnit.MILLISECONDS)
+                        .tag("source", sample.device.source)
+                        .tag("name", sample.device.name)
+                        .tag(sample.device.tags)
+                        .addField("sample", new BigDecimal(sample.payload));
+
+                db.write(b.build());
+
+                queue.remove();
+
+            } catch (Throwable t) {
+
+                // The item we couldn't write is still in the queue
+
+                logger.warn("can't write sample, deferring remaining " + queue.size() + " samples for now", t);
+                break;
+            }
+        }
+
+        db.flush();
     }
 
     private static class Sample {
