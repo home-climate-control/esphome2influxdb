@@ -32,13 +32,26 @@ public class Gateway {
 
         try {
 
-            if (args.length == 0) {
-                logger.fatal("Usage: esphome2influxdb <YAML configuration file path or URL>");
-                logger.fatal("Refusing to work without configuration, see https://github.com/home-climate-control/esphome2influxdb/wiki to get started");
-                System.exit(-1);
-            }
+            Configuration cf;
 
-            Configuration cf = parseConfiguration(args[0]);
+            if (args.length == 0) {
+
+                logger.warn("Usage: esphome2influxdb <YAML configuration file path or URL>");
+                logger.warn("See https://github.com/home-climate-control/esphome2influxdb/wiki to get started");
+                logger.warn("Attempting to start the seed configuration with unauthenticated MQTT and InfluxDB on localhost");
+                logger.warn("No persistent configuration will be stored");
+
+                cf = new Configuration();
+
+                cf.sources.add(new MqttEndpoint());
+                cf.targets.add(new InfluxDbEndpoint());
+
+                cf.verify();
+
+            } else {
+
+                cf = parseConfiguration(args[0]);
+            }
 
             execute(cf);
 
