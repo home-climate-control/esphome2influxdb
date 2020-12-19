@@ -38,4 +38,28 @@ public class InfluxDbWriterTest {
             ThreadContext.pop();
         }
     }
+
+    @Test
+    public void flush1() {
+        ThreadContext.push("flush1");
+        try {
+
+            InfluxDbEndpoint e = new InfluxDbEndpoint();
+            CountDownLatch stoppedGate = new CountDownLatch(1);
+            InfluxDbWriter w = new InfluxDbWriter(e, new HashSet<MqttReader>(), stoppedGate);
+            InfluxDB db = mock(InfluxDB.class);
+            Queue<InfluxDbWriter.Sample> queue = new LinkedBlockingQueue<>();
+            Device s = new Sensor("topic", "source");
+            s.verify();
+
+            queue.add(new InfluxDbWriter.Sample(Clock.systemUTC().instant().toEpochMilli(), s, "oops"));
+
+            w.flush(db, queue);
+
+            assertTrue(queue.isEmpty());
+
+        } finally {
+            ThreadContext.pop();
+        }
+    }
 }

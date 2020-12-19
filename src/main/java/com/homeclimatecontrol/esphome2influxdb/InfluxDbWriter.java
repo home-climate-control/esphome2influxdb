@@ -153,14 +153,26 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
                 // VT: FIXME: This will only work for a sensor; need to change sample semantics
                 // for other device types
 
-                Point.Builder b = Point.measurement(sample.device.getType().literal)
+                Point p;
+
+                try {
+                    Point.Builder b = Point.measurement(sample.device.getType().literal)
                         .time(sample.timestamp, TimeUnit.MILLISECONDS)
                         .tag("source", sample.device.source)
                         .tag("name", sample.device.name)
                         .tag(sample.device.tags)
                         .addField("sample", new BigDecimal(sample.payload));
 
-                db.write(b.build());
+                    p = b.build();
+
+                } catch (NumberFormatException ex) {
+
+                    logger.error("Can't build a point out of a sample, skipped (likely reason is a sensor failure): " + sample, ex);
+                    queue.remove();
+                    continue;
+                }
+
+                db.write(p);
 
                 queue.remove();
 
@@ -186,6 +198,13 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
             this.timestamp = timestamp;
             this.device = device;
             this.payload = payload;
+        }
+
+        @Override
+        public String toString() {
+
+            return "{@" + timestamp + ": device=" + device + ", payload=" + payload + "}";
+
         }
     }
 }
