@@ -3,6 +3,7 @@ plugins {
     application
     id("net.ltgt.errorprone") version "1.3.0"
     jacoco
+    id("org.sonarqube") version "3.2.0"
 }
 
 repositories {
@@ -32,4 +33,12 @@ application {
 
 val test by tasks.getting(Test::class) {
     useJUnitPlatform()
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "home-climate-control_esphome2influxdb")
+        property("sonar.organization", "home-climate-control")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
