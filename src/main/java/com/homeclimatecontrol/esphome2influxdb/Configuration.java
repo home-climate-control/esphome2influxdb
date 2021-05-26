@@ -99,7 +99,7 @@ public class Configuration implements Verifiable {
         // No YAML parsers support dynamically typed generic collections without contortions, so
         // let's dump entries and pull them back by type
 
-        Yaml yaml = new Yaml();
+        var yaml = new Yaml();
 
         for (Object o : devices) {
 
@@ -127,14 +127,14 @@ public class Configuration implements Verifiable {
 
             m.remove("type");
 
-            StringWriter sw = new StringWriter();
+            var sw = new StringWriter();
 
             yaml.dump(m, sw);
 
-            String dump = sw.toString();
+            var dump = sw.toString();
             logger.trace("YAML:\n{}", dump);
 
-            StringReader sr = new StringReader(dump);
+            var sr = new StringReader(dump);
             @SuppressWarnings("unchecked")
             Device d = (Device) yaml.loadAs(sr, t.cls);
 
@@ -153,7 +153,7 @@ public class Configuration implements Verifiable {
     @Override
     public String toString() {
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.append("{");
 

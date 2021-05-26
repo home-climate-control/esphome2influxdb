@@ -67,7 +67,7 @@ public class Gateway {
 
         try {
 
-            Yaml yaml = new Yaml();
+            var yaml = new Yaml();
 
             Configuration cf = yaml.loadAs(getStream(source), Configuration.class);
 
@@ -135,8 +135,7 @@ public class Gateway {
      * @throws IOException if the {@code source} is not a URL, or other I/O problem occurred.
      */
     private InputStream getStreamAsURL(String source) throws IOException {
-        URL sourceURL = new URL(source);
-        return sourceURL.openStream();
+        return new URL(source).openStream();
     }
 
     /**
@@ -149,8 +148,8 @@ public class Gateway {
 
         try {
 
-            CountDownLatch stopGate = new CountDownLatch(1);
-            CountDownLatch stoppedGate = new CountDownLatch(cf.sources.size() + cf.targets.size());
+            var stopGate = new CountDownLatch(1);
+            var stoppedGate = new CountDownLatch(cf.sources.size() + cf.targets.size());
 
             Set<MqttReader> readers = new LinkedHashSet<>();
             Set<InfluxDbWriter> writers = new LinkedHashSet<>();
@@ -165,8 +164,8 @@ public class Gateway {
 
             // Preparation is complete, start everything and enjoy the show.
 
-            int roffset = 0;
-            int woffset = 0;
+            var roffset = 0;
+            var woffset = 0;
 
             for (Runnable r : readers) {
                 new Thread(r, "thread-reader" + roffset++).start();

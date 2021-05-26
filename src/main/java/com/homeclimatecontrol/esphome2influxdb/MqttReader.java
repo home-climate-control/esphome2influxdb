@@ -121,7 +121,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
     private void connect() throws MqttException {
 
-        MqttConnectOptions options = new MqttConnectOptions();
+        var options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
@@ -158,7 +158,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
         try {
 
-            String payload = message.toString();
+            var payload = message.toString();
 
             logger.debug("topic={}, message={}", topic, payload);
 
@@ -263,7 +263,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
             // VT: FIXME: Just the sensor for now
 
-            Matcher m = patternSensor.matcher(topic);
+            var m = patternSensor.matcher(topic);
 
             if (m.matches()) {
 

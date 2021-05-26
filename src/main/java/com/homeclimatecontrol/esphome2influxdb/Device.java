@@ -184,7 +184,7 @@ public abstract class Device implements Verifiable {
 
         String[] tokens = topic.split("/");
         String result = tokens[tokens.length - 1];
-        int deviceOffset = 2;
+        var deviceOffset = 2;
 
         if ("".equals(result)) {
             // The topic must've been specified with a trailing slash, no big deal
@@ -209,7 +209,7 @@ public abstract class Device implements Verifiable {
     @Override
     public String toString() {
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.append("{");
 

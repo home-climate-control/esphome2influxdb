@@ -43,7 +43,7 @@ public class Endpoint implements Verifiable {
 
         if (!messages.isEmpty()) {
 
-            String message = "Invalid state:";
+            var message = "Invalid state:";
 
             for (String s : messages) {
                 message += "\n" + s;
@@ -69,7 +69,7 @@ public class Endpoint implements Verifiable {
     @Override
     public String toString() {
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.append("{");
 

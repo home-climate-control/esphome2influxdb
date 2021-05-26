@@ -34,7 +34,7 @@ public class InfluxDbEndpoint extends Endpoint {
 
         try {
 
-            URL target = new URL(url);
+            var target = new URL(url);
 
             host = target.getHost();
             setPort(target.getPort());
