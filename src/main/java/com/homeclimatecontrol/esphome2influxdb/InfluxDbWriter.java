@@ -167,7 +167,7 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
 
                 } catch (NumberFormatException ex) {
 
-                    logger.error("Can't build a point out of a sample, skipped (likely reason is a sensor failure): " + sample, ex);
+                    logger.error("Can't build a point out of a sample, skipped (likely reason is a sensor failure): {}", sample, ex);
                     queue.remove();
                     continue;
                 }
@@ -180,7 +180,7 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
 
                 // The item we couldn't write is still in the queue
 
-                logger.warn("can't write sample, deferring remaining " + queue.size() + " samples for now", t);
+                logger.warn("can't write sample, deferring remaining {} samples for now", queue.size(), t);
                 break;
             }
         }
