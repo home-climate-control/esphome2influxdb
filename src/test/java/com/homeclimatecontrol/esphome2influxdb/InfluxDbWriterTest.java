@@ -20,12 +20,12 @@ class InfluxDbWriterTest {
         ThreadContext.push("flush0");
         try {
 
-            InfluxDbEndpoint e = new InfluxDbEndpoint();
-            CountDownLatch stoppedGate = new CountDownLatch(1);
-            InfluxDbWriter w = new InfluxDbWriter(e, new HashSet<MqttReader>(), stoppedGate);
-            InfluxDB db = mock(InfluxDB.class);
-            Queue<InfluxDbWriter.Sample> queue = new LinkedBlockingQueue<>();
-            Device s = new Sensor("topic", "source");
+            var e = new InfluxDbEndpoint();
+            var stoppedGate = new CountDownLatch(1);
+            var w = new InfluxDbWriter(e, new HashSet<MqttReader>(), stoppedGate);
+            var db = mock(InfluxDB.class);
+            var queue = new LinkedBlockingQueue<InfluxDbWriter.Sample>();
+            var s = new Sensor("topic", "source");
             s.verify();
 
             queue.add(new InfluxDbWriter.Sample(Clock.systemUTC().instant().toEpochMilli(), s, "19.84"));
@@ -44,12 +44,12 @@ class InfluxDbWriterTest {
         ThreadContext.push("flush1");
         try {
 
-            InfluxDbEndpoint e = new InfluxDbEndpoint();
-            CountDownLatch stoppedGate = new CountDownLatch(1);
-            InfluxDbWriter w = new InfluxDbWriter(e, new HashSet<MqttReader>(), stoppedGate);
-            InfluxDB db = mock(InfluxDB.class);
-            Queue<InfluxDbWriter.Sample> queue = new LinkedBlockingQueue<>();
-            Device s = new Sensor("topic", "source");
+            var e = new InfluxDbEndpoint();
+            var stoppedGate = new CountDownLatch(1);
+            var w = new InfluxDbWriter(e, new HashSet<MqttReader>(), stoppedGate);
+            var db = mock(InfluxDB.class);
+            var queue = new LinkedBlockingQueue<InfluxDbWriter.Sample>();
+            var s = new Sensor("topic", "source");
             s.verify();
 
             queue.add(new InfluxDbWriter.Sample(Clock.systemUTC().instant().toEpochMilli(), s, "oops"));

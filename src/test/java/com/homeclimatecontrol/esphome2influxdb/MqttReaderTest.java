@@ -19,12 +19,12 @@ class MqttReaderTest {
     @Test
     void testTopicMatch() {
 
-        MqttEndpoint e = new MqttEndpoint();
-        Map<String, Device> devices = new LinkedHashMap<>();
+        var e = new MqttEndpoint();
+        var devices = new LinkedHashMap<String, Device>();
 
-        String topicPrefix = "/same/mqtt/topic";
-        Sensor s0 = new Sensor();
-        Sensor s1 = new Sensor();
+        var topicPrefix = "/same/mqtt/topic";
+        var s0 = new Sensor();
+        var s1 = new Sensor();
 
         s0.topicPrefix = topicPrefix;
         s1.topicPrefix = topicPrefix;
@@ -42,27 +42,27 @@ class MqttReaderTest {
         devices.put(key1, s1);
 
 
-        CountDownLatch stopGate = new CountDownLatch(1);
-        CountDownLatch stoppedGate = new CountDownLatch(1);
+        var stopGate = new CountDownLatch(1);
+        var stoppedGate = new CountDownLatch(1);
 
-        MqttReader r = new MqttReader(e, devices.values(), false, stopGate, stoppedGate);
+        var r = new MqttReader(e, devices.values(), false, stopGate, stoppedGate);
 
-        Set<InfluxDbWriter> writers = new LinkedHashSet<>();
+        var writers = new LinkedHashSet<InfluxDbWriter>();
 
-        String topic0 = key0 + "/state";
-        String topic1 = key1 + "/state";
+        var topic0 = key0 + "/state";
+        var topic1 = key1 + "/state";
 
-        InfluxDbWriter w = mock(InfluxDbWriter.class);
+        var w = mock(InfluxDbWriter.class);
 
-        ArgumentCaptor<Device> deviceCaptor = ArgumentCaptor.forClass(Device.class);
-        ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        var deviceCaptor = ArgumentCaptor.forClass(Device.class);
+        var payloadCaptor = ArgumentCaptor.forClass(String.class);
 
         doNothing().when(w).consume(isA(Long.class), deviceCaptor.capture(), payloadCaptor.capture());
 
         writers.add(w);
 
-        String payload0 = "0";
-        String payload1 = "1";
+        var payload0 = "0";
+        var payload1 = "1";
 
         // Take one
 

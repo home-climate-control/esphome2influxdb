@@ -25,7 +25,7 @@ class DeviceTest {
 
         try {
 
-            Sensor s = yaml.loadAs(
+            var s = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor0.yaml"),
                     Sensor.class);
 
@@ -51,7 +51,7 @@ class DeviceTest {
 
         try {
 
-            Sensor s = yaml.loadAs(
+            var s = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor1.yaml"),
                     Sensor.class);
 
@@ -77,7 +77,7 @@ class DeviceTest {
 
         try {
 
-            Sensor s = yaml.loadAs(
+            var s = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor2.yaml"),
                     Sensor.class);
 
@@ -106,7 +106,7 @@ class DeviceTest {
 
         try {
 
-            Sensor s = yaml.loadAs(
+            var s = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor3.yaml"),
                     Sensor.class);
 
@@ -135,7 +135,7 @@ class DeviceTest {
 
         try {
 
-            Sensor s = yaml.loadAs(
+            var s = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-device-sensor4.yaml"),
                     Sensor.class);
 

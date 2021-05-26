@@ -19,7 +19,7 @@ class InfluxDbEndpointTest {
     @Test
     void influxDbEndpoint0() {
 
-        InfluxDbEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-0.yaml"),
                 InfluxDbEndpoint.class);
 
@@ -39,7 +39,7 @@ class InfluxDbEndpointTest {
     @Test
     void influxDbEndpoint1() {
 
-        InfluxDbEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-1.yaml"),
                 InfluxDbEndpoint.class);
 
@@ -58,7 +58,7 @@ class InfluxDbEndpointTest {
     @Test
     void influxDbEndpoint2() {
 
-        InfluxDbEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-2.yaml"),
                 InfluxDbEndpoint.class);
 
@@ -77,7 +77,7 @@ class InfluxDbEndpointTest {
     @Test
     void influxDbEndpoint3() {
 
-        InfluxDbEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-3.yaml"),
                 InfluxDbEndpoint.class);
 
@@ -96,7 +96,7 @@ class InfluxDbEndpointTest {
     @Test
     void influxDbEndpoint4() throws MalformedURLException {
 
-        InfluxDbEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-4.yaml"),
                 InfluxDbEndpoint.class);
 

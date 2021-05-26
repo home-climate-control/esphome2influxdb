@@ -25,7 +25,7 @@ class ConfigurationTest {
 
         try {
 
-            Configuration c = yaml.loadAs(
+            var c = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-configuration-0.yaml"),
                     Configuration.class);
 
@@ -45,7 +45,7 @@ class ConfigurationTest {
 
         try {
 
-            Configuration c = yaml.loadAs(
+            var c = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-configuration-1.yaml"),
                     Configuration.class);
 
@@ -70,32 +70,32 @@ class ConfigurationTest {
 
         try {
 
-            Configuration c = yaml.loadAs(
+            var c = yaml.loadAs(
                     getClass().getClassLoader().getResourceAsStream("instantiate-configuration-complete.yaml"),
                     Configuration.class);
 
             logger.info("loaded: {}", c);
 
-            Set<InfluxDbEndpoint> targets = c.targets;
+            var targets = c.targets;
 
             assertEquals(3, targets.size());
 
             {
-                Iterator<InfluxDbEndpoint> i = targets.iterator();
+                var i = targets.iterator();
 
-                InfluxDbEndpoint local = i.next();
+                var local = i.next();
 
                 assertEquals("localhost", local.host);
                 assertEquals(8086, local.getPort());
                 assertEquals("esphome", local.db);
 
-                InfluxDbEndpoint remote = i.next();
+                var remote = i.next();
 
                 assertEquals("remote", remote.host);
                 assertEquals(9999, remote.getPort());
                 assertEquals("remote-db", remote.db);
 
-                InfluxDbEndpoint backup = i.next();
+                var backup = i.next();
 
                 assertEquals("backup", backup.host);
                 assertEquals(1111, backup.getPort());
@@ -116,7 +116,7 @@ class ConfigurationTest {
 
         try {
 
-            Object c = yaml.load(
+            var c = yaml.load(
                     getClass().getClassLoader().getResourceAsStream("instantiate-configuration-complete.yaml"));
 
             logger.info("loaded: {}", c);

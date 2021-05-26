@@ -16,7 +16,7 @@ class MqttEndpointTest {
     @Test
     void mqttEndpoint0() {
 
-        MqttEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-mqtt-endpoint-0.yaml"),
                 MqttEndpoint.class);
 
@@ -35,7 +35,7 @@ class MqttEndpointTest {
     @Test
     void mqttEndpoint1() {
 
-        MqttEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-mqtt-endpoint-1.yaml"),
                 MqttEndpoint.class);
 
@@ -54,7 +54,7 @@ class MqttEndpointTest {
     @Test
     void mqttEndpoint2() {
 
-        MqttEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-mqtt-endpoint-2.yaml"),
                 MqttEndpoint.class);
 
@@ -73,7 +73,7 @@ class MqttEndpointTest {
     @Test
     void mqttEndpoint3() {
 
-        MqttEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-mqtt-endpoint-3.yaml"),
                 MqttEndpoint.class);
 
@@ -92,7 +92,7 @@ class MqttEndpointTest {
     @Test
     void mqttEndpointNegativePort() {
 
-        MqttEndpoint e = yaml.loadAs(
+        var e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-endpoint-negative-port.yaml"),
                 MqttEndpoint.class);
 

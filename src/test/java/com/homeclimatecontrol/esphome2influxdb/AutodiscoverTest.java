@@ -12,7 +12,7 @@ class AutodiscoverTest {
     @Test
     void sensorMatch() {
 
-        Matcher m = MqttReader.patternSensor.matcher("/esphome/7AC96F/sensor/1wire-bedroom-master-temperature/state");
+        var m = MqttReader.patternSensor.matcher("/esphome/7AC96F/sensor/1wire-bedroom-master-temperature/state");
 
         assertTrue(m.matches());
         assertEquals("/esphome/7AC96F", m.group(1));
