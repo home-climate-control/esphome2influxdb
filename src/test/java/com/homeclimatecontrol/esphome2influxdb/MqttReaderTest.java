@@ -14,10 +14,10 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class MqttReaderTest {
+class MqttReaderTest {
 
     @Test
-    public void testTopicMatch() {
+    void testTopicMatch() {
 
         MqttEndpoint e = new MqttEndpoint();
         Map<String, Device> devices = new LinkedHashMap<>();

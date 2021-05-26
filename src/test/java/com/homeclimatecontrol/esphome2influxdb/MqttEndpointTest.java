@@ -8,13 +8,13 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
-public class MqttEndpointTest {
+class MqttEndpointTest {
 
     private final Logger logger = LogManager.getLogger();
     private final Yaml yaml = new Yaml();
 
     @Test
-    public void mqttEndpoint0() {
+    void mqttEndpoint0() {
 
         MqttEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-mqtt-endpoint-0.yaml"),
@@ -33,7 +33,7 @@ public class MqttEndpointTest {
     }
 
     @Test
-    public void mqttEndpoint1() {
+    void mqttEndpoint1() {
 
         MqttEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-mqtt-endpoint-1.yaml"),
@@ -52,7 +52,7 @@ public class MqttEndpointTest {
     }
 
     @Test
-    public void mqttEndpoint2() {
+    void mqttEndpoint2() {
 
         MqttEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-mqtt-endpoint-2.yaml"),
@@ -71,7 +71,7 @@ public class MqttEndpointTest {
     }
 
     @Test
-    public void mqttEndpoint3() {
+    void mqttEndpoint3() {
 
         MqttEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-mqtt-endpoint-3.yaml"),
@@ -90,7 +90,7 @@ public class MqttEndpointTest {
     }
 
     @Test
-    public void mqttEndpointNegativePort() {
+    void mqttEndpointNegativePort() {
 
         MqttEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-endpoint-negative-port.yaml"),

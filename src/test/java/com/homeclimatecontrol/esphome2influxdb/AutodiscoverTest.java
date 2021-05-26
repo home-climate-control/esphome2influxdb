@@ -7,10 +7,10 @@ import java.util.regex.Matcher;
 
 import org.junit.jupiter.api.Test;
 
-public class AutodiscoverTest {
+class AutodiscoverTest {
 
     @Test
-    public void sensorMatch() {
+    void sensorMatch() {
 
         Matcher m = MqttReader.patternSensor.matcher("/esphome/7AC96F/sensor/1wire-bedroom-master-temperature/state");
 

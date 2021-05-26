@@ -13,13 +13,13 @@ import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
-public class DeviceTest {
+class DeviceTest {
 
     private final Logger logger = LogManager.getLogger();
     private final Yaml yaml = new Yaml();
 
     @Test
-    public void sensor0() {
+    void sensor0() {
 
         ThreadContext.push("sensor0");
 
@@ -45,7 +45,7 @@ public class DeviceTest {
     }
 
     @Test
-    public void sensor1() {
+    void sensor1() {
 
         ThreadContext.push("sensor1");
 
@@ -71,7 +71,7 @@ public class DeviceTest {
     }
 
     @Test
-    public void sensor2() {
+    void sensor2() {
 
         ThreadContext.push("sensor2");
 
@@ -100,7 +100,7 @@ public class DeviceTest {
     }
 
     @Test
-    public void sensor3() {
+    void sensor3() {
 
         ThreadContext.push("sensor3");
 
@@ -129,7 +129,7 @@ public class DeviceTest {
     }
 
     @Test
-    public void sensor4() {
+    void sensor4() {
 
         ThreadContext.push("sensor4");
 

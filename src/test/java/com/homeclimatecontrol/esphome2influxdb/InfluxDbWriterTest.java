@@ -13,10 +13,10 @@ import org.apache.logging.log4j.ThreadContext;
 import org.influxdb.InfluxDB;
 import org.junit.jupiter.api.Test;
 
-public class InfluxDbWriterTest {
+class InfluxDbWriterTest {
 
     @Test
-    public void flush0() {
+    void flush0() {
         ThreadContext.push("flush0");
         try {
 
@@ -40,7 +40,7 @@ public class InfluxDbWriterTest {
     }
 
     @Test
-    public void flush1() {
+    void flush1() {
         ThreadContext.push("flush1");
         try {
 

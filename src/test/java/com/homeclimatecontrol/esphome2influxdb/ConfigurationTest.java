@@ -13,13 +13,13 @@ import org.apache.logging.log4j.ThreadContext;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
-public class ConfigurationTest {
+class ConfigurationTest {
 
     private final Logger logger = LogManager.getLogger();
     private final Yaml yaml = new Yaml();
 
     @Test
-    public void configuration0() {
+    void configuration0() {
 
         ThreadContext.push("configuration0");
 
@@ -39,7 +39,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void configuration1() {
+    void configuration1() {
 
         ThreadContext.push("configuration1");
 
@@ -64,7 +64,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void complete() {
+    void complete() {
 
         ThreadContext.push("complete");
 
@@ -110,7 +110,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void raw() {
+    void raw() {
 
         ThreadContext.push("raw");
 

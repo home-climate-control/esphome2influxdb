@@ -11,13 +11,13 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
-public class InfluxDbEndpointTest {
+class InfluxDbEndpointTest {
 
     private final Logger logger = LogManager.getLogger();
     private final Yaml yaml = new Yaml();
 
     @Test
-    public void influxDbEndpoint0() {
+    void influxDbEndpoint0() {
 
         InfluxDbEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-0.yaml"),
@@ -37,7 +37,7 @@ public class InfluxDbEndpointTest {
     }
 
     @Test
-    public void influxDbEndpoint1() {
+    void influxDbEndpoint1() {
 
         InfluxDbEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-1.yaml"),
@@ -56,7 +56,7 @@ public class InfluxDbEndpointTest {
     }
 
     @Test
-    public void influxDbEndpoint2() {
+    void influxDbEndpoint2() {
 
         InfluxDbEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-2.yaml"),
@@ -75,7 +75,7 @@ public class InfluxDbEndpointTest {
     }
 
     @Test
-    public void influxDbEndpoint3() {
+    void influxDbEndpoint3() {
 
         InfluxDbEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-3.yaml"),
@@ -94,7 +94,7 @@ public class InfluxDbEndpointTest {
     }
 
     @Test
-    public void influxDbEndpoint4() throws MalformedURLException {
+    void influxDbEndpoint4() throws MalformedURLException {
 
         InfluxDbEndpoint e = yaml.loadAs(
                 getClass().getClassLoader().getResourceAsStream("instantiate-influxdb-endpoint-4.yaml"),
