@@ -153,6 +153,14 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
                 // VT: FIXME: This will only work for a sensor; need to change sample semantics
                 // for other device types
 
+                // Known problem
+
+                if ("nan".equalsIgnoreCase(sample.payload)) {
+                    logger.warn("NaN payload, ignored: {}", sample);
+                    queue.remove();
+                    continue;
+                }
+
                 Point p;
 
                 try {
