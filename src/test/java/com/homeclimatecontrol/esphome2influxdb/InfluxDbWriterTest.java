@@ -1,5 +1,6 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -32,7 +33,7 @@ class InfluxDbWriterTest {
 
             w.flush(db, queue);
 
-            assertTrue(queue.isEmpty());
+            assertThat(queue).isEmpty();
 
         } finally {
             ThreadContext.pop();
@@ -56,7 +57,7 @@ class InfluxDbWriterTest {
 
             w.flush(db, queue);
 
-            assertTrue(queue.isEmpty());
+            assertThat(queue).isEmpty();
 
         } finally {
             ThreadContext.pop();
