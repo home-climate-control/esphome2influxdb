@@ -1,5 +1,7 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,7 +33,7 @@ class ConfigurationTest {
 
             logger.info("loaded: {}", c);
 
-            assertFalse(c.needToStart());
+            assertThat(c.needToStart()).isFalse();
 
         } finally {
             ThreadContext.pop();
@@ -51,12 +53,12 @@ class ConfigurationTest {
 
             logger.info("loaded: {}", c);
 
-            assertEquals(2, c.sources.size());
+            assertThat(c.sources).hasSize(2);
 
             Iterator<MqttEndpoint> is = c.sources.iterator();
 
-            assertEquals(8888, is.next().getPort());
-            assertEquals(9999, is.next().getPort());
+            assertThat(is.next().getPort()).isEqualTo(8888);
+            assertThat(is.next().getPort()).isEqualTo(9999);
 
         } finally {
             ThreadContext.pop();
@@ -78,28 +80,28 @@ class ConfigurationTest {
 
             var targets = c.targets;
 
-            assertEquals(3, targets.size());
+            assertThat(targets).hasSize(3);
 
             {
                 var i = targets.iterator();
 
                 var local = i.next();
 
-                assertEquals("localhost", local.host);
-                assertEquals(8086, local.getPort());
-                assertEquals("esphome", local.db);
+                assertThat(local.host).isEqualTo("localhost");
+                assertThat(local.getPort()).isEqualTo(8086);
+                assertThat(local.db).isEqualTo("esphome");
 
                 var remote = i.next();
 
-                assertEquals("remote", remote.host);
-                assertEquals(9999, remote.getPort());
-                assertEquals("remote-db", remote.db);
+                assertThat(remote.host).isEqualTo("remote");
+                assertThat(remote.getPort()).isEqualTo(9999);
+                assertThat(remote.db).isEqualTo("remote-db");
 
                 var backup = i.next();
 
-                assertEquals("backup", backup.host);
-                assertEquals(1111, backup.getPort());
-                assertEquals("backup-db", backup.db);
+                assertThat(backup.host).isEqualTo("backup");
+                assertThat(backup.getPort()).isEqualTo(1111);
+                assertThat(backup.db).isEqualTo("backup-db");
             }
 
             c.verify();
@@ -116,13 +118,13 @@ class ConfigurationTest {
 
         try {
 
+            assertThatCode(() -> {
+
             var c = yaml.load(
                     getClass().getClassLoader().getResourceAsStream("instantiate-configuration-complete.yaml"));
 
             logger.info("loaded: {}", c);
-
-            // VT: NOTE: This test is just here to validate the YAML in case the other test fails
-            assertTrue(true);
+            }).doesNotThrowAnyException();
 
         } finally {
             ThreadContext.pop();
