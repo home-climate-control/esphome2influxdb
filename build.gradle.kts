@@ -23,6 +23,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
     testImplementation("org.mockito:mockito-core:3.6.28")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    testImplementation("org.assertj:assertj-core:3.20.2")
     errorprone("com.google.errorprone:error_prone_core:2.6.0")
     errorproneJavac("com.google.errorprone:javac:9-dev-r4023-3")
 }
