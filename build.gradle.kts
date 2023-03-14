@@ -30,7 +30,7 @@ dependencies {
 }
 
 application {
-    mainClassName = "com.homeclimatecontrol.esphome2influxdb.Gateway"
+    mainClass.set("com.homeclimatecontrol.esphome2influxdb.Gateway")
 }
 
 val test by tasks.getting(Test::class) {
