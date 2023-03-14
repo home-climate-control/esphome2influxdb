@@ -1,7 +1,7 @@
 plugins {
     java
     application
-    id("net.ltgt.errorprone") version "1.3.0"
+    id("net.ltgt.errorprone") version "3.0.1"
     jacoco
     id("org.sonarqube") version "3.2.0"
 }
@@ -25,8 +25,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.6.28")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
     testImplementation("org.assertj:assertj-core:3.20.2")
-    errorprone("com.google.errorprone:error_prone_core:2.6.0")
-    errorproneJavac("com.google.errorprone:javac:9-dev-r4023-3")
+    errorprone("com.google.errorprone:error_prone_core:2.18.0")
 }
 
 application {
@@ -38,8 +37,8 @@ val test by tasks.getting(Test::class) {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 sonarqube {
