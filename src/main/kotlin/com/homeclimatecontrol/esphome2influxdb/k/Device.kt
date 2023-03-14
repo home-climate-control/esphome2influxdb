@@ -88,7 +88,7 @@ abstract class Device : Verifiable {
      */
     private fun resolve(topic: String?): Array<String> {
         requireNotNull(topic) { "Can't accept null topic here" }
-        return if (!topic.contains(getType()!!.literal)) {
+        return if (!topic.contains(getType().literal)) {
 
             // This means that the device type prefix wasn't specified, and that the source must be specified explicitly
             resolveShort(topic)
@@ -155,8 +155,8 @@ abstract class Device : Verifiable {
         // Make sure that we're working with the right device
         val type = tokens[tokens.size - deviceOffset]
 
-        require(getType()!!.literal == type) {
-            ("Wrong topic: expecting '" + getType()!!.literal
+        require(getType().literal == type) {
+            ("Wrong topic: expecting '" + getType().literal
                     + "' as a part of the topic, received '" + type + "' instead")
         }
 

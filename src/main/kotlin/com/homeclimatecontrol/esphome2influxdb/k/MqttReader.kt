@@ -72,7 +72,7 @@ class MqttReader(
         options.isAutomaticReconnect = true
         options.isCleanSession = true
         options.connectionTimeout = 10
-        options.userName = endpoint!!.username
+        options.userName = endpoint.username
 
         // https://github.com/eclipse/paho.mqtt.java/issues/804
         // https://github.com/home-climate-control/dz/issues/148
@@ -180,7 +180,7 @@ class MqttReader(
         this.stopGate = stopGate
         try {
             // Only authenticate if both credentials are present
-            if (endpoint!!.username != null && endpoint.password != null) {
+            if (endpoint.username != null && endpoint.password != null) {
                 client = MqttClient(
                     "tcp://" + endpoint.username + ":" + endpoint.password + "@" + endpoint.host + ":" + endpoint.getPort(),
                     clientId
