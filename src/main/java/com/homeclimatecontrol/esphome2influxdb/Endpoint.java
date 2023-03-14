@@ -19,7 +19,6 @@ public class Endpoint implements Verifiable {
     public String username;
     public String password;
 
-
     public int getPort() {
         return port;
     }
