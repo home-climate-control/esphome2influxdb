@@ -184,11 +184,11 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
 
                 queue.remove();
 
-            } catch (Throwable t) {
+            } catch (Exception ex) {
 
                 // The item we couldn't write is still in the queue
 
-                logger.warn("can't write sample, deferring remaining {} samples for now", queue.size(), t);
+                logger.warn("can't write sample, deferring remaining {} samples for now", queue.size(), ex);
                 break;
             }
         }

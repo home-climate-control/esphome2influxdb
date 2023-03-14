@@ -55,8 +55,8 @@ public class Gateway {
 
             execute(cf);
 
-        } catch (Throwable t) {
-            logger.fatal("Unexpected exception, terminating", t);
+        } catch (Exception ex) {
+            logger.fatal("Unexpected exception, terminating", ex);
         } finally {
             ThreadContext.pop();
         }
@@ -88,8 +88,8 @@ public class Gateway {
 
         } catch (ScannerException ex) {
             throw new IllegalArgumentException("Malformed YAML while parsing " + source, ex);
-        } catch (Throwable t) {
-            throw new IllegalArgumentException("Unexpected exception while parsing " + source,  t);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Unexpected exception while parsing " + source,  ex);
         } finally {
             ThreadContext.pop();
         }
