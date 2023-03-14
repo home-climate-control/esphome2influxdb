@@ -1,5 +1,9 @@
+import org.gradle.kotlin.dsl.support.CompiledKotlinBuildScript
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     java
+    kotlin("jvm") version "1.8.10"
     application
     id("net.ltgt.errorprone") version "3.0.1"
     jacoco
@@ -32,13 +36,19 @@ application {
     mainClass.set("com.homeclimatecontrol.esphome2influxdb.Gateway")
 }
 
-val test by tasks.getting(Test::class) {
+tasks.withType<Test> {
     useJUnitPlatform()
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 sonarqube {
