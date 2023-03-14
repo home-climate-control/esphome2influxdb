@@ -16,6 +16,18 @@ import java.util.concurrent.CountDownLatch
 
 class Gateway {
 
+    companion object {
+        /**
+         * Run the application.
+         *
+         * @param args Command line arguments - there is just one, configuration file URL.
+         */
+        @JvmStatic
+        fun main(args: Array<String>) {
+            Gateway().run(args)
+        }
+    }
+
     private val logger = LogManager.getLogger()
 
     fun run(args: Array<String>) {
@@ -173,13 +185,4 @@ class Gateway {
     private fun getStreamAsURL(source: String): InputStream {
         return URL(source).openStream()
     }
-}
-
-/**
- * Run the application.
- *
- * @param args Command line arguments - there is just one, configuration file URL.
- */
-fun main(args: Array<String>) {
-    Gateway().run(args)
 }

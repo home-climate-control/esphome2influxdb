@@ -33,7 +33,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.homeclimatecontrol.esphome2influxdb.Gateway")
+    mainClass.set("com.homeclimatecontrol.esphome2influxdb.k.Gateway")
 }
 
 tasks.withType<Test> {
