@@ -47,13 +47,13 @@ class Configuration : Verifiable {
     }
 
     private fun haveSources() : Boolean {
-        return !sources!!.isEmpty()
+        return sources!!.isNotEmpty()
     }
     private fun haveTargets() : Boolean {
-        return !targets!!.isEmpty()
+        return targets!!.isNotEmpty()
     }
     private fun haveDevices() : Boolean {
-        return !devices!!.isEmpty()
+        return devices!!.isNotEmpty()
     }
     override fun verify() {
 
@@ -100,8 +100,7 @@ class Configuration : Verifiable {
             val m = o as MutableMap<String, String>
             val type = m["type"] ?: throw IllegalArgumentException("'type' is missing in $m")
 
-            var t: Device.Type
-            t = try {
+            val t = try {
                 Device.Type.valueOf(type.uppercase())
             } catch (ex: IllegalArgumentException) {
                 throw IllegalArgumentException("unknown type '$type in $m", ex)
