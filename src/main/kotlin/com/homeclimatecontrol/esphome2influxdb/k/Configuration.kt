@@ -13,9 +13,9 @@ class Configuration : Verifiable {
     private val logger = LogManager.getLogger()
 
     var autodiscover: Boolean = true
-    val sources: MutableSet<MqttEndpoint> = LinkedHashSet()
-    val targets: MutableSet<InfluxDbEndpoint> = LinkedHashSet()
-    private val devices: Set<Any> = LinkedHashSet()
+    var sources: MutableSet<MqttEndpoint> = LinkedHashSet()
+    var targets: MutableSet<InfluxDbEndpoint> = LinkedHashSet()
+    var devices: Set<Any> = LinkedHashSet()
     val parsed: MutableSet<Device> = LinkedHashSet()
 
     fun needToStart(): Boolean {
@@ -86,7 +86,7 @@ class Configuration : Verifiable {
 
             var t: Device.Type
             t = try {
-                Device.Type.valueOf(type.toUpperCase())
+                Device.Type.valueOf(type.uppercase())
             } catch (ex: IllegalArgumentException) {
                 throw IllegalArgumentException("unknown type '$type in $m", ex)
             }
@@ -104,7 +104,12 @@ class Configuration : Verifiable {
         }
     }
 
-    fun getDevices() : Set<Device> {
+    /**
+     * Get the list of devices parsed out of [devices].
+     *
+     * This will only return a valid result after [parseDevices] is called.
+     */
+    fun getParsedDevices() : Set<Device> {
         return parsed;
     }
 

@@ -105,7 +105,7 @@ class Gateway {
             val readers: MutableSet<MqttReader> = LinkedHashSet()
             val writers: MutableSet<InfluxDbWriter> = LinkedHashSet()
             for (e in cf.sources) {
-                readers.add(MqttReader(e, cf.getDevices(), cf.autodiscover, stopGate, stoppedGate))
+                readers.add(MqttReader(e, cf.getParsedDevices(), cf.autodiscover, stopGate, stoppedGate))
             }
             for (e in cf.targets) {
                 writers.add(InfluxDbWriter(e, readers, stoppedGate))

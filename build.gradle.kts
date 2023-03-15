@@ -29,6 +29,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.6.28")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     errorprone("com.google.errorprone:error_prone_core:2.18.0")
 }
 

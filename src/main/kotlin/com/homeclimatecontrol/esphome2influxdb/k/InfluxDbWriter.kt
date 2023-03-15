@@ -20,6 +20,15 @@ class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
     private var db: InfluxDB? = null
     private val queue: Queue<Sample> = LinkedBlockingQueue()
     private val QUEUE_MAX = 1024
+    constructor(e: InfluxDbEndpoint,
+        readers: Set<MqttReader>,
+        stoppedGate: CountDownLatch
+    ): this(e, stoppedGate) {
+        for (r in readers) {
+            r.attach(this)
+        }
+    }
+
     override fun run() {
         ThreadContext.push("run")
 
