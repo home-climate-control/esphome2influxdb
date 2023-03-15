@@ -41,8 +41,8 @@ class Gateway {
                 logger.warn("No persistent configuration will be stored")
 
                 cf = Configuration()
-                cf.sources.add(MqttEndpoint())
-                cf.targets.add(InfluxDbEndpoint())
+                cf.sources!!.add(MqttEndpoint())
+                cf.targets!!.add(InfluxDbEndpoint())
                 cf.verify()
             } else {
                 cf = parseConfiguration(args[0])
@@ -97,13 +97,13 @@ class Gateway {
 
         try {
             val stopGate = CountDownLatch(1)
-            val stoppedGate = CountDownLatch(cf.sources.size + cf.targets.size)
+            val stoppedGate = CountDownLatch(cf.sources!!.size + cf.targets!!.size)
             val readers: MutableSet<MqttReader> = LinkedHashSet()
             val writers: MutableSet<InfluxDbWriter> = LinkedHashSet()
-            for (e in cf.sources) {
+            for (e in cf.sources!!) {
                 readers.add(MqttReader(e, cf.getParsedDevices(), cf.autodiscover, stopGate, stoppedGate))
             }
-            for (e in cf.targets) {
+            for (e in cf.targets!!) {
                 writers.add(InfluxDbWriter(e, readers, stoppedGate))
             }
 

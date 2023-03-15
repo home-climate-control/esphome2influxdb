@@ -10,9 +10,13 @@ class Configuration : Verifiable {
     private val logger = LogManager.getLogger()
 
     var autodiscover: Boolean = true
-    var sources: MutableSet<MqttEndpoint> = LinkedHashSet()
-    var targets: MutableSet<InfluxDbEndpoint> = LinkedHashSet()
-    var devices: Set<Any> = LinkedHashSet()
+
+    // The following are only declared nullable so that SnakeYAML doesn't choke
+
+    var sources: MutableSet<MqttEndpoint>? = LinkedHashSet()
+    var targets: MutableSet<InfluxDbEndpoint>? = LinkedHashSet()
+    var devices: Set<Any>? = LinkedHashSet()
+
     val parsed: MutableSet<Device> = LinkedHashSet()
 
     fun needToStart(): Boolean {
@@ -43,21 +47,25 @@ class Configuration : Verifiable {
     }
 
     private fun haveSources() : Boolean {
-        return !sources.isEmpty()
+        return !sources!!.isEmpty()
     }
     private fun haveTargets() : Boolean {
-        return !targets.isEmpty()
+        return !targets!!.isEmpty()
     }
     private fun haveDevices() : Boolean {
-        return !devices.isEmpty()
+        return !devices!!.isEmpty()
     }
     override fun verify() {
 
-        for (v in sources) {
+        // It is simpler to provide empty collections than to if-then-else them everywhere
+
+        fillNulls()
+
+        for (v in sources!!) {
             v.verify()
         }
 
-        for (v in targets) {
+        for (v in targets!!) {
             v.verify()
         }
 
@@ -68,6 +76,17 @@ class Configuration : Verifiable {
         }
     }
 
+    private fun fillNulls() {
+
+        if (sources == null) {
+            sources = LinkedHashSet()
+        }
+
+        if (targets == null) {
+            targets = LinkedHashSet()
+        }
+    }
+
     private fun parseDevices() {
 
         // No YAML parsers support dynamically typed generic collections without contortions, so
@@ -75,7 +94,7 @@ class Configuration : Verifiable {
 
         val yaml = Yaml()
 
-        for (o in devices) {
+        for (o in devices!!) {
 
             logger.trace("{}: {}", o.javaClass.name, o)
             val m = o as MutableMap<String, String>
@@ -107,7 +126,7 @@ class Configuration : Verifiable {
      * This will only return a valid result after [parseDevices] is called.
      */
     fun getParsedDevices() : Set<Device> {
-        return parsed;
+        return parsed
     }
 
     override fun toString() : String {

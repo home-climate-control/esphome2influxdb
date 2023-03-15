@@ -20,6 +20,7 @@ class ConfigurationTest {
                 Configuration::class.java
             )
             logger.info("loaded: {}", c)
+            c.verify()
             Assertions.assertThat(c.needToStart()).isFalse
         } finally {
             ThreadContext.pop()
@@ -36,9 +37,9 @@ class ConfigurationTest {
             )
             logger.info("loaded: {}", c)
             Assertions.assertThat(c!!.sources).hasSize(2)
-            val `is` = c.sources.iterator()
-            Assertions.assertThat(`is`.next()!!.getPort()).isEqualTo(8888)
-            Assertions.assertThat(`is`.next()!!.getPort()).isEqualTo(9999)
+            val `is` = c.sources!!.iterator()
+            Assertions.assertThat(`is`.next().getPort()).isEqualTo(8888)
+            Assertions.assertThat(`is`.next().getPort()).isEqualTo(9999)
         } finally {
             ThreadContext.pop()
         }
@@ -58,15 +59,15 @@ class ConfigurationTest {
             run {
                 val i = targets!!.iterator()
                 val local = i.next()
-                Assertions.assertThat(local!!.host).isEqualTo("localhost")
+                Assertions.assertThat(local.host).isEqualTo("localhost")
                 Assertions.assertThat(local.getPort()).isEqualTo(8086)
                 Assertions.assertThat(local.db).isEqualTo("esphome")
                 val remote = i.next()
-                Assertions.assertThat(remote!!.host).isEqualTo("remote")
+                Assertions.assertThat(remote.host).isEqualTo("remote")
                 Assertions.assertThat(remote.getPort()).isEqualTo(9999)
                 Assertions.assertThat(remote.db).isEqualTo("remote-db")
                 val backup = i.next()
-                Assertions.assertThat(backup!!.host).isEqualTo("backup")
+                Assertions.assertThat(backup.host).isEqualTo("backup")
                 Assertions.assertThat(backup.getPort()).isEqualTo(1111)
                 Assertions.assertThat(backup.db).isEqualTo("backup-db")
             }
