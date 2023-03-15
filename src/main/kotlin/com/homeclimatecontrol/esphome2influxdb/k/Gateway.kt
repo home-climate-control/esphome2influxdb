@@ -1,9 +1,5 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
-import com.homeclimatecontrol.esphome2influxdb.InfluxDbEndpoint
-import com.homeclimatecontrol.esphome2influxdb.InfluxDbWriter
-import com.homeclimatecontrol.esphome2influxdb.MqttEndpoint
-import com.homeclimatecontrol.esphome2influxdb.MqttReader
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.ThreadContext
 import org.yaml.snakeyaml.Yaml

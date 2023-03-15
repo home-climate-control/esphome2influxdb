@@ -1,9 +1,5 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
-import com.homeclimatecontrol.esphome2influxdb.Climate
-import com.homeclimatecontrol.esphome2influxdb.Device
-import com.homeclimatecontrol.esphome2influxdb.Sensor
-import com.homeclimatecontrol.esphome2influxdb.Switch
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.ThreadContext
 import java.util.*

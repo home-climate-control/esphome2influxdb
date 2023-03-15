@@ -1,8 +1,5 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
-import com.homeclimatecontrol.esphome2influxdb.Device
-import com.homeclimatecontrol.esphome2influxdb.MqttReader
-
 class MqttEndpoint : Endpoint() {
 
     /**

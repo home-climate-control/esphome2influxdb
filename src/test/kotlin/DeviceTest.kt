@@ -1,6 +1,5 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
-import com.homeclimatecontrol.esphome2influxdb.Sensor
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.ThreadContext
 import org.assertj.core.api.Assertions

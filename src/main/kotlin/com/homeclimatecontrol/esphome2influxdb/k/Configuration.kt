@@ -1,8 +1,5 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
-import com.homeclimatecontrol.esphome2influxdb.Device
-import com.homeclimatecontrol.esphome2influxdb.InfluxDbEndpoint
-import com.homeclimatecontrol.esphome2influxdb.MqttEndpoint
 import org.apache.logging.log4j.LogManager
 import org.yaml.snakeyaml.Yaml
 import java.io.StringReader
