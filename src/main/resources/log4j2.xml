@@ -12,7 +12,7 @@
         <RollingFile
             name="DebugAppender"
             fileName="logs/esphome2influxdb-debug.log"
-            filePattern="esphome2influxdb-debug.log.%d{yyyy-MM-dd}">
+            filePattern="logs/esphome2influxdb-debug.log.%d{yyyy-MM-dd}">
             <PatternLayout pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss,SSS} %level %class{1} %t %NDC %message%n}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
@@ -25,7 +25,7 @@
         <RollingFile
             name="WarnAppender"
             fileName="logs/esphome2influxdb-warn.log"
-            filePattern="esphome2influxdb-warn.log.%d{yyyy-MM-dd}">
+            filePattern="logsesphome2influxdb-warn.log.%d{yyyy-MM-dd}">
             <PatternLayout pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss,SSS} %level %class{1} %t %NDC %message%n}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
