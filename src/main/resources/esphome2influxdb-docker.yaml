@@ -1,5 +1,5 @@
-# Default configuration using unauthenticated MQTT broker on 'mqtt' host,
-# and InfluxDB running on 'influxdb' host,
+# Default configuration using unauthenticated MQTT broker on 'mqtt-esphome' host,
+# and InfluxDB running on 'influxdb-esphome' host,
 # and autodiscovered devices only.
 
 # Autodiscovery is enabled by default, so all new devices will generate InfluxDB series,
@@ -11,7 +11,7 @@
 # look for '--dns' and related options).
 
 sources:
-  - host: mqtt
+  - host: mqtt-esphome
 
 targets:
-  - host: influxdb
+  - host: influxdb-esphome
