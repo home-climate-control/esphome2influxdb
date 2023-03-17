@@ -12,21 +12,21 @@ repositories {
 }
 
 dependencies {
-    implementation("org.apache.logging.log4j:log4j-api:2.14.0")
-    implementation("org.apache.logging.log4j:log4j-core:2.14.0")
-    implementation("org.yaml:snakeyaml:1.27")
+    implementation("org.apache.logging.log4j:log4j-api:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation("org.yaml:snakeyaml:1.33")
 
     // https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3
-    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2")
+    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
 
-    implementation("org.influxdb:influxdb-java:2.21")
+    implementation("org.influxdb:influxdb-java:2.23")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    testImplementation("org.mockito:mockito-core:3.6.28")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
-    testImplementation("org.assertj:assertj-core:3.20.2")
-    errorprone("com.google.errorprone:error_prone_core:2.6.0")
-    errorproneJavac("com.google.errorprone:javac:9-dev-r4023-3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.mockito:mockito-core:5.2.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    errorprone("com.google.errorprone:error_prone_core:2.18.0")
+    errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
 application {
