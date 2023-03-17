@@ -67,6 +67,8 @@ public class Gateway {
 
         try {
 
+            logger.info("Reading configuration from {}", source);
+
             var yaml = new Yaml();
 
             Configuration cf = yaml.loadAs(getStream(source), Configuration.class);
