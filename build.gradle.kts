@@ -4,6 +4,7 @@ plugins {
     id("net.ltgt.errorprone") version "3.0.1"
     jacoco
     id("org.sonarqube") version "3.2.0"
+    id("com.google.cloud.tools.jib") version "3.3.1"
 }
 
 repositories {
@@ -46,5 +47,22 @@ sonarqube {
         property("sonar.projectKey", "home-climate-control_esphome2influxdb")
         property("sonar.organization", "home-climate-control")
         property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
+jib {
+    container {
+        args = listOf("conf/esphome2influxdb.yaml")
+        extraDirectories {
+
+            paths {
+                path {
+                    setFrom("src/main/resources")
+                    into = "${jib.container.appRoot}/app/conf"
+                    includes.add("esphome2influxdb.yaml")
+                }
+            }
+        }
+        workingDirectory = "${jib.container.appRoot}/app/"
     }
 }

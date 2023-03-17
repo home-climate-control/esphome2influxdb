@@ -6,7 +6,7 @@ RUN gradle --no-daemon installDist
 
 FROM openjdk:17-jdk-slim
 COPY --from=builder /home/gradle/src/build/install/esphome2influxdb /app
-COPY src/main/resources/esphome2influxdb-docker.yaml /app/conf/esphome2influxdb.yaml
+COPY src/main/resources/esphome2influxdb.yaml /app/conf/esphome2influxdb.yaml
 RUN mkdir /app/logs
 
 VOLUME /app/conf /app/logs
