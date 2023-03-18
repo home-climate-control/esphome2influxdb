@@ -51,6 +51,11 @@ sonarqube {
 }
 
 jib {
+
+    to {
+        image ="climategadgets/esphome2influxdb"
+    }
+
     container {
         args = listOf("conf/esphome2influxdb.yaml")
         extraDirectories {
