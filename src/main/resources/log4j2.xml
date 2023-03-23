@@ -16,10 +16,26 @@
             <PatternLayout pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss,SSS} %level %class{1} %t %NDC %message%n}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
+                <!-- Debug level logs are BIG -->
+                <DefaultRolloverStrategy max="3"/>
             </Policies>
             <Filters>
-                <!-- Set your comfortable debug level for the debug log. Best be left as is.-->
+                <!-- Set your comfortable debug level for the debug log. Best be left as is, most of the traffic comes at DEBUG level.-->
                 <ThresholdFilter level="trace"  onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+        <RollingFile
+                name="InfoAppender"
+                fileName="logs/esphome2influxdb-info.log"
+                filePattern="logs/esphome2influxdb-info.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss,SSS} %level %class{1} %t %NDC %message%n}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <DefaultRolloverStrategy max="30"/>
+            </Policies>
+            <Filters>
+                <!-- Set your comfortable debug level for the long term log. -->
+                <ThresholdFilter level="info"  onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
         </RollingFile>
         <RollingFile
@@ -40,6 +56,7 @@
         <Root level="TRACE">
             <AppenderRef ref="ConsoleAppender"/>
             <AppenderRef ref="WarnAppender"/>
+            <AppenderRef ref="InfoAppender"/>
             <AppenderRef ref="DebugAppender"/>
         </Root>
     </Loggers>
