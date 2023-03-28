@@ -5,6 +5,7 @@ plugins {
     jacoco
     id("org.sonarqube") version "3.2.0"
     id("com.google.cloud.tools.jib") version "3.3.1"
+    id("com.gorylenko.gradle-git-properties") version "2.4.1"
 }
 
 repositories {
