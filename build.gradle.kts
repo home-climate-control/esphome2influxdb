@@ -3,7 +3,7 @@ plugins {
     application
     id("net.ltgt.errorprone") version "3.0.1"
     jacoco
-    id("org.sonarqube") version "3.2.0"
+    id("org.sonarqube") version "4.0.0.2929"
     id("com.google.cloud.tools.jib") version "3.3.1"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
 }
@@ -36,6 +36,22 @@ application {
 
 val test by tasks.getting(Test::class) {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
 }
 
 java {
