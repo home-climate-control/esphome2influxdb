@@ -1,2 +1,2 @@
-# com.homeclimatecontrol.esphome2influxdb.MqttEndpointTest#influxDbEndpoint3()
+# com.homeclimatecontrol.esphome2influxdb.MqttEndpointTest#mqttEndpoint(EndpointConfigr)
 host: localhost
