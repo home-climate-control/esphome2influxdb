@@ -34,6 +34,7 @@ dependencies {
     testImplementation(libs.junit5.api)
     testImplementation(libs.junit5.params)
     testImplementation(libs.mockito)
+    testImplementation(libs.mockito.kotlin)
     testRuntimeOnly(libs.junit5.engine)
     testImplementation(libs.assertj.core)
     errorprone(libs.errorprone)
