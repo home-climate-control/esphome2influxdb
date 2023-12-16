@@ -5,9 +5,12 @@ plugins {
     java
     kotlin("jvm") version "1.8.10"
     application
-    id("net.ltgt.errorprone") version "3.0.1"
     jacoco
-    id("org.sonarqube") version "3.2.0"
+    alias(libs.plugins.errorprone)
+    alias(libs.plugins.sonarqube)
+    alias(libs.plugins.git.properties)
+    alias(libs.plugins.gradle.versions)
+    alias(libs.plugins.jib)
 }
 
 repositories {
@@ -15,22 +18,25 @@ repositories {
     mavenCentral()
 }
 
+group = "com.homeclimatecontrol.esphome2influxdb"
+version = "2.0.1-SNAPSHOT"
+
 dependencies {
-    implementation("org.apache.logging.log4j:log4j-api:2.14.0")
-    implementation("org.apache.logging.log4j:log4j-core:2.17.1")
-    implementation("org.yaml:snakeyaml:2.0")
+    implementation(libs.log4j.api)
+    implementation(libs.log4j.core)
+    implementation(libs.snakeyaml)
 
     // https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3
-    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.2")
+    implementation(libs.paho.mqtt.v3)
 
-    implementation("org.influxdb:influxdb-java:2.21")
+    implementation(libs.influxdb)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    testImplementation("org.mockito:mockito-core:3.6.28")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
-    testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-    errorprone("com.google.errorprone:error_prone_core:2.18.0")
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.params)
+    testImplementation(libs.mockito)
+    testRuntimeOnly(libs.junit5.engine)
+    testImplementation(libs.assertj.core)
+    errorprone(libs.errorprone)
 }
 
 application {
@@ -39,6 +45,22 @@ application {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
 }
 
 java {
@@ -57,5 +79,27 @@ sonarqube {
         property("sonar.projectKey", "home-climate-control_esphome2influxdb")
         property("sonar.organization", "home-climate-control")
         property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
+jib {
+
+    to {
+        image ="climategadgets/esphome2influxdb-k"
+    }
+
+    container {
+        args = listOf("conf/esphome2influxdb.yaml")
+        extraDirectories {
+
+            paths {
+                path {
+                    setFrom("src/main/resources")
+                    into = "${jib.container.appRoot}/app/conf"
+                    includes.add("esphome2influxdb.yaml")
+                }
+            }
+        }
+        workingDirectory = "${jib.container.appRoot}/app/"
     }
 }

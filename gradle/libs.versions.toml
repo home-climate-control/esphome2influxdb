@@ -1,0 +1,33 @@
+[versions]
+
+assertj = "3.24.2"
+errorprone = "2.23.0"
+influxdb = "2.24"
+jib = "3.4.0"
+junit5 = "5.10.1"
+log4j = "2.22.0"
+mockito = "5.8.0"
+paho-mqtt = "1.2.5"
+snakeyaml = "1.33"
+sonarqube = "4.4.1.3373"
+
+[libraries]
+
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+errorprone = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
+influxdb = { module = "org.influxdb:influxdb-java", version.ref = "influxdb" }
+junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
+junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
+junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
+log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+paho-mqtt-v3 = { module = "org.eclipse.paho:org.eclipse.paho.client.mqttv3", version.ref = "paho-mqtt" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+
+[plugins]
+errorprone = { id = "net.ltgt.errorprone", version = "3.1.0" }
+git-properties = { id = "com.gorylenko.gradle-git-properties", version = "2.4.1" }
+gradle-versions = { id = "com.github.ben-manes.versions", version = "0.50.0"}
+jib = { id = "com.google.cloud.tools.jib", version.ref = "jib" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
