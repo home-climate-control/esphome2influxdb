@@ -155,10 +155,5 @@ abstract class Device(
 
         return result
     }
-    override fun toString() =
-        "{class="
-            .plus(javaClass.name)
-            .plus(",topic=$topicPrefix,source=$source,name=$name,type=")
-            .plus(getType().literal)
-            .plus(",tags=$tags")
+    override fun toString() = "{class=${javaClass.name},topic=$topicPrefix,source=$source,name=$name,type=${getType().literal},tags=$tags"
 }

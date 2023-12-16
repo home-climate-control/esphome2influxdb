@@ -13,6 +13,29 @@ class InfluxDbEndpointTest {
     private val yaml : Yaml = Yaml()
 
     @Test
+    fun get() {
+        val e = InfluxDbEndpoint()
+        assertEquals("http://localhost:8086", e.url)
+
+        val url = "https://outside:9999"
+        e.url = url
+        assertEquals(url, e.url)
+    }
+
+    @Test
+    fun render() {
+        val e = InfluxDbEndpoint()
+        assertEquals(
+            "{class=com.homeclimatecontrol.esphome2influxdb.k.InfluxDbEndpoint,name=localhost:8086,host:port=localhost:8086,url=http://localhost:8086,db=esphome}",
+            e.toString())
+
+        e.url = "https://outside:9999"
+        assertEquals(
+            "{class=com.homeclimatecontrol.esphome2influxdb.k.InfluxDbEndpoint,name=outside:9999,host:port=outside:9999,url=https://outside:9999,db=esphome}",
+            e.toString())
+    }
+
+    @Test
     fun influxDbEndpoint0() {
         val e = yaml.loadAs(
             javaClass.classLoader.getResourceAsStream("instantiate-influxdb-endpoint-0.yaml"),
@@ -20,10 +43,10 @@ class InfluxDbEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("localhost", e.host)
-        assertEquals(8086, e.getPort())
+        assertEquals(8086, e.port)
 
         // Defaults
-        assertEquals("localhost:8086", e.getName())
+        assertEquals("localhost:8086", e.name)
         assertEquals("esphome", e.db)
         assertNull(e.username)
         assertNull(e.password)
@@ -37,12 +60,12 @@ class InfluxDbEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("localhost", e.host)
-        assertEquals(8086, e.getPort())
+        assertEquals(8086, e.port)
         assertEquals("eCegh5xe", e.username)
         assertEquals("Boh4ohda", e.password)
 
         // Defaults
-        assertEquals("localhost:8086", e.getName())
+        assertEquals("localhost:8086", e.name)
     }
 
     @Test
@@ -53,8 +76,8 @@ class InfluxDbEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("localhost", e.host)
-        assertEquals(8086, e.getPort())
-        assertEquals("zero", e.getName())
+        assertEquals(8086, e.port)
+        assertEquals("zero", e.name)
 
         // Defaults
         assertNull(e.username)
@@ -69,8 +92,8 @@ class InfluxDbEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("localhost", e.host)
-        assertEquals(9999, e.getPort())
-        assertEquals("localhost:9999", e.getName())
+        assertEquals(9999, e.port)
+        assertEquals("localhost:9999", e.name)
 
         // Defaults
         assertNull(e.username)
@@ -86,9 +109,9 @@ class InfluxDbEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("remote-host", e.host)
-        assertEquals(1111, e.getPort())
-        assertEquals("remote-host:1111", e.getName())
-        assertEquals(URL("http://remote-host:1111/").toString(), e.getUrl())
+        assertEquals(1111, e.port)
+        assertEquals("remote-host:1111", e.name)
+        assertEquals(URL("http://remote-host:1111/").toString(), e.url)
 
         // Defaults
         assertNull(e.username)

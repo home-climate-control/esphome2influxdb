@@ -67,12 +67,12 @@ class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
                     logger.warn("one of (username, password) is null or missing, connecting unauthenticated - THIS IS A BAD IDEA")
                     logger.warn("see https://docs.influxdata.com/influxdb/v1.8/administration/authentication_and_authorization/")
                     logger.warn("(username, password) = ({}, {})", endpoint.username, endpoint.password)
-                    InfluxDBFactory.connect(endpoint.getUrl())
+                    InfluxDBFactory.connect(endpoint.url)
                 } else {
-                    InfluxDBFactory.connect(endpoint.getUrl(), endpoint.username, endpoint.password)
+                    InfluxDBFactory.connect(endpoint.url, endpoint.username, endpoint.password)
                 }
             val end = clock.instant().toEpochMilli()
-            logger.info("connected to {} in {}ms", endpoint.getUrl(), end - start)
+            logger.info("connected to {} in {}ms", endpoint.url, end - start)
 
             // This section is short and won't delay other synchronized calls much
             synchronized(this) { this.db = db }

@@ -10,8 +10,8 @@ class MqttEndpoint(
 ) : Endpoint() {
 
     init {
-        setPort(1883)
+        port = 1883
     }
 
-    override fun render() = super.render().plus(",topic=$topic")
+    override fun render() = "${super.render()},topic=$topic"
 }

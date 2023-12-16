@@ -6,19 +6,18 @@ import org.apache.logging.log4j.Logger
 open class Endpoint : Verifiable {
     protected val logger: Logger = LogManager.getLogger()
 
-    private var name: String? = null
+    var name: String? = null
+        get(): String? {
+            return if (field != null) {
+                field as String
+            } else "$host:$port"
+        }
+
     var host: String? = "localhost"
-    private var port = 0
     var username: String? = null
     var password: String? = null
 
-    fun getPort(): Int {
-        return port
-    }
-
-    fun setPort(port: Int) {
-        this.port = port
-    }
+    var port: Int = 0
 
     override fun verify() {
 
@@ -44,30 +43,18 @@ open class Endpoint : Verifiable {
         }
     }
 
-    fun getName(): String {
-        return if (name != null) {
-            name as String
-        } else "$host:$port"
-    }
-
-    fun setName(name: String) {
-        this.name = name
-    }
-
     override fun toString(): String {
-        return "{".plus(render()).plus("}")
+        return "{${render()}}"
     }
 
     protected open fun render() : String {
 
-        val part1 = "class=".plus(javaClass.name)
-            .plus(",name=").plus(getName())
-            .plus(",host:port=$host:$port")
+        val part1 = "class=${javaClass.name},name=$name,host:port=$host:$port"
 
         if (username == null && password == null) {
-            return part1;
+            return part1
         }
 
-        return part1.plus(",username:password=$username:$password")
+        return "$part1,username:password=$username:$password"
     }
 }

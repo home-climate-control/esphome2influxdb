@@ -3,8 +3,10 @@ package com.homeclimatecontrol.esphome2influxdb.k
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.ThreadContext
 import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.yaml.snakeyaml.Yaml
+import java.util.*
 
 class DeviceTest {
 
@@ -116,5 +118,25 @@ class DeviceTest {
         } finally {
             ThreadContext.pop()
         }
+    }
+
+    @Test
+    fun render() {
+        val td = TestDevice()
+        assertEquals(
+            "{class=com.homeclimatecontrol.esphome2influxdb.k.DeviceTest\$TestDevice,topic=null,source=null,name=null,type=climate,tags={}",
+            td.toString(), "localhost:0"
+        )
+
+        val name = UUID.randomUUID().toString()
+        td.name = name
+        org.junit.jupiter.api.Assertions.assertEquals(
+            "{class=com.homeclimatecontrol.esphome2influxdb.k.DeviceTest\$TestDevice,topic=null,source=null,name=$name,type=climate,tags={}",
+            td.toString()
+        )
+    }
+
+    private class TestDevice(topicPrefix: String? = null, source: String? = null) : Device(topicPrefix, source) {
+        override fun getType() = Type.CLIMATE
     }
 }

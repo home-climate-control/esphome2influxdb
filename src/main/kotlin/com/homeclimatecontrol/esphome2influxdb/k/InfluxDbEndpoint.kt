@@ -13,32 +13,26 @@ class InfluxDbEndpoint() : Endpoint() {
      *
      * Overrides `host:port`.
      */
-    private var url: String? = null
+    var url: String? = null
+        get() = field ?: ("http://" + host + ":" + port)
+        set(url) {
+            try {
+                val target = URL(url)
+                host = target.host
+                port = target.port
+                field = target.toString()
+            } catch (ex: MalformedURLException) {
+                throw IllegalArgumentException(ex)
+            }
+        }
 
     var db = "esphome"
 
     init {
-        setPort(8086)
-    }
-
-    fun getUrl(): String? {
-        return if (url == null) {
-            "http://" + host + ":" + getPort()
-        } else url
-    }
-
-    fun setUrl(url: String?) {
-        try {
-            val target = URL(url)
-            host = target.host
-            setPort(target.port)
-            this.url = target.toString()
-        } catch (ex: MalformedURLException) {
-            throw IllegalArgumentException(ex)
-        }
+        port = 8086
     }
 
     override fun render() : String {
-        return super.render().plus(",url=").plus(getUrl()).plus(",db=$db")
+        return "${super.render()},url=$url,db=$db"
     }
 }

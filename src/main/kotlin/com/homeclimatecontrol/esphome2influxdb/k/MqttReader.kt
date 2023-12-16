@@ -59,7 +59,7 @@ class MqttReader(
             // Only authenticate if both credentials are present
             if (endpoint.username != null && endpoint.password != null) {
                 client = MqttClient(
-                    "tcp://" + endpoint.username + ":" + endpoint.password + "@" + endpoint.host + ":" + endpoint.getPort(),
+                    "tcp://" + endpoint.username + ":" + endpoint.password + "@" + endpoint.host + ":" + endpoint.port,
                     clientId
                 )
             } else {
@@ -67,7 +67,7 @@ class MqttReader(
                     // Bad idea to have no password
                     logger.warn("Missing MQTT password, connecting unauthenticated. This behavior will not be allowed in future releases.")
                 }
-                client = MqttClient("tcp://" + endpoint.host + ":" + endpoint.getPort(), clientId)
+                client = MqttClient("tcp://" + endpoint.host + ":" + endpoint.port, clientId)
             }
         } catch (ex: MqttException) {
             throw IllegalStateException("Failed to create a client for $endpoint")

@@ -19,10 +19,10 @@ class MqttEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("localhost", e.host)
-        assertEquals(1883, e.getPort())
+        assertEquals(1883, e.port)
 
         // Defaults
-        assertEquals("localhost:1883", e.getName())
+        assertEquals("localhost:1883", e.name)
         assertNull(e.username)
         assertNull(e.password)
     }
@@ -35,12 +35,12 @@ class MqttEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("localhost", e.host)
-        assertEquals(1883, e.getPort())
+        assertEquals(1883, e.port)
         assertEquals("eCegh5xe", e.username)
         assertEquals("Boh4ohda", e.password)
 
         // Defaults
-        assertEquals("localhost:1883", e.getName())
+        assertEquals("localhost:1883", e.name)
     }
 
     @Test
@@ -51,10 +51,10 @@ class MqttEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("localhost", e.host)
-        assertEquals(1883, e.getPort())
+        assertEquals(1883, e.port)
 
         // Defaults
-        assertEquals("localhost:1883", e.getName())
+        assertEquals("localhost:1883", e.name)
         assertNull(e.username)
         assertNull(e.password)
     }
@@ -67,8 +67,8 @@ class MqttEndpointTest {
         )
         logger.info("loaded: {}", e)
         assertEquals("localhost", e.host)
-        assertEquals(9999, e.getPort())
-        assertEquals("localhost:9999", e.getName())
+        assertEquals(9999, e.port)
+        assertEquals("localhost:9999", e.name)
 
         // Defaults
         assertNull(e.username)
@@ -85,7 +85,7 @@ class MqttEndpointTest {
         assertEquals("localhost", e.host)
 
         // We're still good at this point
-        assertEquals(-100, e.getPort())
+        assertEquals(-100, e.port)
 
         // But the verification mustn't pass
         try {
