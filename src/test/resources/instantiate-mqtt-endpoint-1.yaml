@@ -1,4 +1,4 @@
-# com.homeclimatecontrol.esphome2influxdb.MqttEndpointTest#influxDbEndpoint1()
+# com.homeclimatecontrol.esphome2influxdb.MqttEndpointTest#mqttEndpoint(EndpointConfig)
 host: localhost
 port: 1883
 username: eCegh5xe
