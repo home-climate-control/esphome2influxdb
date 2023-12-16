@@ -46,15 +46,10 @@ class Configuration : Verifiable {
         return true
     }
 
-    private fun haveSources() : Boolean {
-        return sources!!.isNotEmpty()
-    }
-    private fun haveTargets() : Boolean {
-        return targets!!.isNotEmpty()
-    }
-    private fun haveDevices() : Boolean {
-        return devices!!.isNotEmpty()
-    }
+    private fun haveSources() = sources!!.isNotEmpty()
+    private fun haveTargets() = targets!!.isNotEmpty()
+    private fun haveDevices() = devices!!.isNotEmpty()
+
     override fun verify() {
 
         // It is simpler to provide empty collections than to if-then-else them everywhere
@@ -124,11 +119,7 @@ class Configuration : Verifiable {
      *
      * This will only return a valid result after [parseDevices] is called.
      */
-    fun getParsedDevices() : Set<Device> {
-        return parsed
-    }
+    fun getParsedDevices() = parsed
 
-    override fun toString() : String {
-        return "{sources=$sources,targets=$targets,devices/raw=$devices,devices/parsed=$parsed}"
-    }
+    override fun toString() = "{sources=$sources,targets=$targets,devices/raw=$devices,devices/parsed=$parsed}"
 }

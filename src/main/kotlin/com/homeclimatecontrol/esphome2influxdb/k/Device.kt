@@ -5,7 +5,14 @@ import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.ThreadContext
 import java.util.*
 
-abstract class Device : Verifiable {
+/**
+ * @param topicPrefix MQTT topic prefix to read updates from. Unlike [MqttEndpoint.topic] filter which is passed to [MqttReader], this filter will be applied locally.
+ * @param source Source device name. Either derived from the [MQTT topic][topicPrefix], or specified explicitly.
+ */
+abstract class Device(
+    var topicPrefix: String? = null,
+    var source: String? = null
+) : Verifiable {
 
     protected val logger: Logger = LogManager.getLogger()
 
@@ -16,21 +23,9 @@ abstract class Device : Verifiable {
     }
 
     /**
-     * MQTT topic prefix to read updates from.
-     *
-     * Unlike [MqttEndpoint.topic] filter which is passed to [MqttReader], this filter will be applied locally.
-     */
-    var topicPrefix: String? = null
-
-    /**
      * Tags.
      */
     var tags: Map<String, String> = TreeMap()
-
-    /**
-     * Source device name. Either derived from the [MQTT topic][topicPrefix], or specified explicitly.
-     */
-    var source: String? = null
 
     /**
      * Human readable device name. Either derived from the [MQTT topic][topicPrefix], or specified explicitly.
@@ -43,6 +38,7 @@ abstract class Device : Verifiable {
      * @return Device type. Defines how the sample is rendered.
      */
     abstract fun getType(): Type
+
     override fun verify() {
 
         ThreadContext.push("verify")
@@ -159,12 +155,10 @@ abstract class Device : Verifiable {
 
         return result
     }
-    override fun toString() : String {
-
-        return "{class="
+    override fun toString() =
+        "{class="
             .plus(javaClass.name)
             .plus(",topic=$topicPrefix,source=$source,name=$name,type=")
             .plus(getType().literal)
             .plus(",tags=$tags")
-    }
 }

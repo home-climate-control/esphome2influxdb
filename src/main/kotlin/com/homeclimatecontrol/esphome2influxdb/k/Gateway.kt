@@ -167,9 +167,7 @@ class Gateway {
      * @return Source stream.
      * @throws IOException if the {@code source} is not a file, or other I/O problem occurred.
      */
-    private fun getStreamAsFile(source: String): InputStream {
-        return FileInputStream(source)
-    }
+    private fun getStreamAsFile(source: String) = FileInputStream(source)
 
     /**
      * Get the stream from the given URL.
@@ -178,7 +176,5 @@ class Gateway {
      * @return Source stream.
      * @throws IOException if the {@code source} is not a URL, or other I/O problem occurred.
      */
-    private fun getStreamAsURL(source: String): InputStream {
-        return URL(source).openStream()
-    }
+    private fun getStreamAsURL(source: String) = URL(source).openStream()
 }
