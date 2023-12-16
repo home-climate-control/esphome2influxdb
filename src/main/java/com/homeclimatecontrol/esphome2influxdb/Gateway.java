@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import com.homeclimatecontrol.esphome2influxdb.runtime.GitProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -50,6 +51,10 @@ public class Gateway {
 
             } else {
 
+                // It would be nice to tell them which version is running BEFORE trying to parse the configuration, in case versions are incompatible
+
+                reportGitProperties();
+
                 cf = parseConfiguration(args[0]);
             }
 
@@ -62,6 +67,16 @@ public class Gateway {
         }
     }
 
+    private void reportGitProperties() throws IOException {
+
+        var p = GitProperties.get();
+
+        logger.debug("git.branch={}", p.get("git.branch"));
+        logger.debug("git.commit.id={}", p.get("git.commit.id"));
+        logger.debug("git.commit.id.abbrev={}", p.get("git.commit.id.abbrev"));
+        logger.debug("git.commit.id.describe={}", p.get("git.commit.id.describe"));
+        logger.debug("git.build.version={}", p.get("git.build.version"));
+    }
     private Configuration parseConfiguration(String source) {
         ThreadContext.push("parseConfiguration");
 
