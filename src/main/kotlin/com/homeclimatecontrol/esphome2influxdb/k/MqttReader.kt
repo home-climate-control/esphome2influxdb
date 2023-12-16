@@ -9,6 +9,15 @@ import java.util.regex.Pattern
 import kotlin.collections.LinkedHashMap
 import kotlin.collections.LinkedHashSet
 
+/**
+ * MQTT reader.
+ *
+ * @param e Endpoint configuration to connect to.
+ * @param devices Set of previously configured devices to render the feed for.
+ * @param autodiscover `true` if newly discovered devices get their own feed automatically.
+ * @param stopGate Semaphore to listen to to initiate shutdown.
+ * @param stoppedGate Semaphore to count down when the shutdown is complete.
+ */
 class MqttReader(
     e: MqttEndpoint,
     devices: Collection<Device>,
@@ -18,6 +27,8 @@ class MqttReader(
 ) :
     Worker<MqttEndpoint>(e, stoppedGate),
     MqttCallback {
+
+
     private val clock = Clock.systemUTC()
     private val autodiscover: Boolean
 
@@ -39,6 +50,30 @@ class MqttReader(
      */
     val clientId = UUID.randomUUID().toString()
     private var client: IMqttClient? = null
+
+    init {
+        this.devices = parseTopic(devices)
+        this.autodiscover = autodiscover
+        this.stopGate = stopGate
+        try {
+            // Only authenticate if both credentials are present
+            if (endpoint.username != null && endpoint.password != null) {
+                client = MqttClient(
+                    "tcp://" + endpoint.username + ":" + endpoint.password + "@" + endpoint.host + ":" + endpoint.getPort(),
+                    clientId
+                )
+            } else {
+                if (endpoint.username != null) {
+                    // Bad idea to have no password
+                    logger.warn("Missing MQTT password, connecting unauthenticated. This behavior will not be allowed in future releases.")
+                }
+                client = MqttClient("tcp://" + endpoint.host + ":" + endpoint.getPort(), clientId)
+            }
+        } catch (ex: MqttException) {
+            throw IllegalStateException("Failed to create a client for $endpoint")
+        }
+    }
+
     private fun parseTopic(source: Collection<Device>): MutableMap<String, Device> {
         val result: MutableMap<String, Device> = LinkedHashMap()
         for (d: Device in source) {
@@ -166,42 +201,10 @@ class MqttReader(
     var autodiscoveredDevices: Set<Device> = LinkedHashSet()
 
     /**
-     * Create an instance.
-     *
-     * @param e Endpoint configuration to connect to.
-     * @param devices Set of previously configured devices to render the feed for.
-     * @param autodiscover `true` if newly discovered devices get their own feed automatically.
-     * @param stopGate Semaphore to listen to to initiate shutdown.
-     * @param stoppedGate Semaphore to count down when the shutdown is complete.
-     */
-    init {
-        this.devices = parseTopic(devices)
-        this.autodiscover = autodiscover
-        this.stopGate = stopGate
-        try {
-            // Only authenticate if both credentials are present
-            if (endpoint.username != null && endpoint.password != null) {
-                client = MqttClient(
-                    "tcp://" + endpoint.username + ":" + endpoint.password + "@" + endpoint.host + ":" + endpoint.getPort(),
-                    clientId
-                )
-            } else {
-                if (endpoint.username != null) {
-                    // Bad idea to have no password
-                    logger.warn("Missing MQTT password, connecting unauthenticated. This behavior will not be allowed in future releases.")
-                }
-                client = MqttClient("tcp://" + endpoint.host + ":" + endpoint.getPort(), clientId)
-            }
-        } catch (ex: MqttException) {
-            throw IllegalStateException("Failed to create a client for $endpoint")
-        }
-    }
-
-    /**
      * Autodiscover devices not specified in the configuration.
      *
-     * Note: autodiscovery will be performed always, but newly discovered devices will
-     * only get their feed created if [.autodiscover] is `true`.
+     * Note: autodiscovery will always be performed, but newly discovered devices will
+     * only get their feed created if [autodiscover] is `true`.
      *
      * @param topic MQTT topic.
      * @param payload MQTT message payload (VT: FIXME: unused now,

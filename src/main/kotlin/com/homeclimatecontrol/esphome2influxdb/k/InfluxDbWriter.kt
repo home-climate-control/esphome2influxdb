@@ -122,7 +122,7 @@ class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
      */
     @Synchronized
     fun flush(db: InfluxDB, queue: Queue<Sample>) {
-        while (!queue.isEmpty()) {
+        while (queue.isNotEmpty()) {
             try {
                 val sample = queue.peek()
 

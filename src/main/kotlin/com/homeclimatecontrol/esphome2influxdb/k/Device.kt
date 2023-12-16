@@ -1,12 +1,13 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.ThreadContext
 import java.util.*
 
 abstract class Device : Verifiable {
 
-    protected val logger = LogManager.getLogger()
+    protected val logger: Logger = LogManager.getLogger()
 
     enum class Type(val literal: String, val cls: Class<*>) {
         CLIMATE("climate", Climate::class.java),

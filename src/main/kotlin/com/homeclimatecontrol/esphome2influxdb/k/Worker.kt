@@ -1,6 +1,7 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import java.util.concurrent.CountDownLatch
 
 abstract class Worker<T : Endpoint> protected constructor(
@@ -14,8 +15,6 @@ abstract class Worker<T : Endpoint> protected constructor(
      * Gate to `countDown()` when the worker shutdown is complete.
      */
     protected val stoppedGate: CountDownLatch
-) :
-    Runnable {
-    protected val logger = LogManager.getLogger()
-
+) : Runnable {
+    protected val logger: Logger = LogManager.getLogger()
 }

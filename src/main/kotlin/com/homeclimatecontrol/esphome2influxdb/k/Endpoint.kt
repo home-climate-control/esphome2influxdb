@@ -1,9 +1,10 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 open class Endpoint : Verifiable {
-    protected val logger = LogManager.getLogger()
+    protected val logger: Logger = LogManager.getLogger()
 
     private var name: String? = null
     var host: String? = "localhost"
@@ -31,7 +32,7 @@ open class Endpoint : Verifiable {
             messages.add("port can't be negative ($port provided)")
         }
 
-        if (!messages.isEmpty()) {
+        if (messages.isNotEmpty()) {
             var message = "Invalid state:"
             for (s in messages) {
                 message += """

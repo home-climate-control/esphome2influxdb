@@ -33,7 +33,7 @@ class Gateway {
 
             val cf: Configuration
 
-            if (args.size == 0) {
+            if (args.isEmpty()) {
 
                 logger.warn("Usage: esphome2influxdb <YAML configuration file path or URL>")
                 logger.warn("See https://github.com/home-climate-control/esphome2influxdb/wiki to get started")
