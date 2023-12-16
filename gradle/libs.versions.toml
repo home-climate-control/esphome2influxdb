@@ -7,6 +7,7 @@ jib = "3.4.0"
 junit5 = "5.10.1"
 log4j = "2.22.0"
 mockito = "5.8.0"
+mockito-kotlin = "2.2.0"
 paho-mqtt = "1.2.5"
 snakeyaml = "1.33"
 sonarqube = "4.4.1.3373"
@@ -22,6 +23,7 @@ junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref
 log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-kotlin = { module = "com.nhaarman.mockitokotlin2:mockito-kotlin", version.ref = "mockito-kotlin" }
 paho-mqtt-v3 = { module = "org.eclipse.paho:org.eclipse.paho.client.mqttv3", version.ref = "paho-mqtt" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 
