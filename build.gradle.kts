@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version libs.versions.kotlin
     application
     jacoco
     alias(libs.plugins.errorprone)
