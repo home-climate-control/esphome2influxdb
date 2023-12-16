@@ -1,15 +1,15 @@
 [versions]
 
 assertj = "3.24.2"
-errorprone = "2.20.0"
-influxdb = "2.23"
-jib = "3.3.2"
-junit5 = "5.9.3"
-log4j = "2.20.0"
-mockito = "5.5.0"
+errorprone = "2.23.0"
+influxdb = "2.24"
+jib = "3.4.0"
+junit5 = "5.10.1"
+log4j = "2.22.0"
+mockito = "5.8.0"
 paho-mqtt = "1.2.5"
 snakeyaml = "1.33"
-sonarqube = "4.0.0.2929"
+sonarqube = "4.4.1.3373"
 
 [libraries]
 
