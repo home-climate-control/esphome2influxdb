@@ -10,6 +10,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 import java.util.concurrent.CountDownLatch
+import kotlin.system.exitProcess
 
 
 class Gateway {
@@ -49,7 +50,7 @@ class Gateway {
             } else {
 
                 // It would be nice to tell them which version is running BEFORE trying to parse the configuration, in case versions are incompatible
-                reportGitProperties();
+                reportGitProperties()
 
                 cf = parseConfiguration(args[0])
             }
@@ -63,7 +64,7 @@ class Gateway {
         }
     }
 
-    @Throws(IOException::class) private fun reportGitProperties() {
+    private fun reportGitProperties() {
 
         val p = GitProperties.get()
 
@@ -73,6 +74,7 @@ class Gateway {
         logger.debug("git.commit.id.describe={}", p["git.commit.id.describe"])
         logger.debug("git.build.version={}", p["git.build.version"])
     }
+
     private fun parseConfiguration(source: String): Configuration {
         ThreadContext.push("parseConfiguration")
 
@@ -89,7 +91,7 @@ class Gateway {
 
             if (!cf.needToStart()) {
                 logger.info("Terminating")
-                System.exit(0)
+                exitProcess(0)
             }
 
             cf

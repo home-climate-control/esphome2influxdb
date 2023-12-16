@@ -12,22 +12,23 @@ class GitProperties {
         private var props: Properties? = null
         private val mutex = Mutex()
         fun get(): Properties {
-            return props ?: read()
-        }
-
-        private fun read(): Properties {
 
             runBlocking {
                 mutex.withLock {
-                    val p = Properties()
-                    GitProperties::class.java.classLoader.getResourceAsStream("git.properties").use {
-                        p.load(it)
-                        props = p
-                    }
+                    props ?: read()
                 }
             }
 
             return props!!
+        }
+
+        private fun read() {
+
+            val p = Properties()
+            GitProperties::class.java.classLoader.getResourceAsStream("git.properties").use {
+                p.load(it)
+                props = p
+            }
         }
     }
 }
