@@ -1,5 +1,6 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
+import com.homeclimatecontrol.esphome2influxdb.k.runtime.GitProperties
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.ThreadContext
 import org.yaml.snakeyaml.Yaml
@@ -9,6 +10,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 import java.util.concurrent.CountDownLatch
+
 
 class Gateway {
 
@@ -45,6 +47,10 @@ class Gateway {
                 cf.targets!!.add(InfluxDbEndpoint())
                 cf.verify()
             } else {
+
+                // It would be nice to tell them which version is running BEFORE trying to parse the configuration, in case versions are incompatible
+                reportGitProperties();
+
                 cf = parseConfiguration(args[0])
             }
 
@@ -57,13 +63,23 @@ class Gateway {
         }
     }
 
+    @Throws(IOException::class) private fun reportGitProperties() {
+
+        val p = GitProperties.get()
+
+        logger.debug("git.branch={}", p["git.branch"])
+        logger.debug("git.commit.id={}", p["git.commit.id"])
+        logger.debug("git.commit.id.abbrev={}", p["git.commit.id.abbrev"])
+        logger.debug("git.commit.id.describe={}", p["git.commit.id.describe"])
+        logger.debug("git.build.version={}", p["git.build.version"])
+    }
     private fun parseConfiguration(source: String): Configuration {
         ThreadContext.push("parseConfiguration")
 
         return try {
             val yaml = Yaml()
             val cf: Configuration =
-                yaml.loadAs<Configuration>(
+                yaml.loadAs(
                     getStream(source),
                     Configuration::class.java
                 )

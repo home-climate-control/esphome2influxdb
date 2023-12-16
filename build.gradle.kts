@@ -22,6 +22,7 @@ group = "com.homeclimatecontrol.esphome2influxdb"
 version = "2.0.1-SNAPSHOT"
 
 dependencies {
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.log4j.api)
     implementation(libs.log4j.core)
     implementation(libs.snakeyaml)
@@ -38,6 +39,8 @@ dependencies {
     testRuntimeOnly(libs.junit5.engine)
     testImplementation(libs.assertj.core)
     errorprone(libs.errorprone)
+
+    runtimeOnly(libs.kotlinx.coroutines.core.jvm)
 }
 
 application {

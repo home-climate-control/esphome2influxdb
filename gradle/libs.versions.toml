@@ -5,7 +5,8 @@ errorprone = "2.23.0"
 influxdb = "2.24"
 jib = "3.4.0"
 junit5 = "5.10.1"
-kotlin = "1.9.20"
+kotlin = "1.9.21"
+kotlinx-coroutines = "1.8.0-RC"
 log4j = "2.22.0"
 mockito = "5.8.0"
 mockito-kotlin = "2.2.0"
@@ -21,6 +22,8 @@ influxdb = { module = "org.influxdb:influxdb-java", version.ref = "influxdb" }
 junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
 log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
