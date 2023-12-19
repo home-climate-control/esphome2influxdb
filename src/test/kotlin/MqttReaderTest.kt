@@ -1,12 +1,14 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import java.util.concurrent.CountDownLatch
 
 class MqttReaderTest {
+    @Disabled("Only run this test if it matches your infrastructure")
     @Test
     fun testTopicMatch() {
 
