@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch
 abstract class Worker<T : Endpoint>(
     protected val endpoint: T,
     protected val stoppedGate: CountDownLatch
-) : Runnable {
+) {
     protected val logger: Logger = LogManager.getLogger()
+    public abstract suspend fun run();
 }

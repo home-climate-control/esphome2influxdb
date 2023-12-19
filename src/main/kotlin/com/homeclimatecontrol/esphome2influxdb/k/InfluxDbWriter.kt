@@ -1,5 +1,6 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
+import kotlinx.coroutines.delay
 import org.apache.logging.log4j.ThreadContext
 import org.influxdb.InfluxDB
 import org.influxdb.InfluxDBFactory
@@ -29,7 +30,7 @@ class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
         }
     }
 
-    override fun run() {
+    override suspend fun run() {
         ThreadContext.push("run")
 
         try {
@@ -41,7 +42,7 @@ class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
 
             // VT: FIXME: Implement the rest of the lifecycle
             while (true) {
-                Thread.sleep(60000)
+                delay(60000)
             }
         } catch (ex: InterruptedException) {
             logger.error("Interrupted, terminating", ex)

@@ -1,6 +1,7 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
 import com.homeclimatecontrol.esphome2influxdb.k.runtime.GitProperties
+import kotlinx.coroutines.*
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.ThreadContext
 import org.yaml.snakeyaml.Yaml
@@ -12,8 +13,9 @@ import java.net.URL
 import java.util.concurrent.CountDownLatch
 import kotlin.system.exitProcess
 
-
 class Gateway {
+
+    private val dispatcher: CoroutineDispatcher  = Dispatchers.IO
 
     companion object {
         /**
@@ -55,7 +57,9 @@ class Gateway {
                 cf = parseConfiguration(args[0])
             }
 
-            execute(cf)
+            runBlocking {
+                execute(cf)
+            }
 
         } catch (ex: Exception) {
             logger.fatal("Unexpected exception, terminating", ex)
@@ -110,7 +114,7 @@ class Gateway {
      *
      * @param cf Configuration to execute.
      */
-    private fun execute(cf: Configuration) {
+    private suspend fun execute(cf: Configuration) = coroutineScope {
         ThreadContext.push("execute")
 
         try {
@@ -127,26 +131,35 @@ class Gateway {
 
             // Preparation is complete, start everything and enjoy the show.
 
-            var roffset = 0
-            var woffset = 0
+            val readerJobs = mutableListOf<Job>()
+            val writerJobs = mutableListOf<Job>()
 
-            for (r in readers) {
-                Thread(r, "thread-reader" + roffset++).start()
+            // VT: NOTE: This syntax is the only way to get rid of nagging about hardcoded dispatchers. Sorry, that's the only one I need.
+            withContext(this@Gateway.dispatcher) {
+                for (r in readers) {
+                    readerJobs.add(
+                        launch {
+                            r.run()
+                        })
+                }
+                logger.info("Started {} reader[s]", readerJobs.size)
+
+                for (w in writers) {
+                    writerJobs.add(
+                        launch {
+                            w.run()
+                        })
+                }
+                logger.info("Started {} writer[s]", writerJobs.size)
             }
-            logger.info("Started {} reader[s]", readers.size)
-            for (r in writers) {
-                Thread(r, "thread-writer" + woffset++).start()
-            }
-            logger.info("Started {} writer[s]", writers.size)
 
             // Ctrl-C or SIGTERM are now the only ways to terminate this process.
 
             // VT: FIXME: Implement the rest of the lifecycle
-            if (true) {
-                while (true) {
-                    Thread.sleep(60000)
-                }
+            while (true) {
+                delay(60000)
             }
+
             stopGate.countDown()
             logger.info("Shutting down")
             stoppedGate.await()

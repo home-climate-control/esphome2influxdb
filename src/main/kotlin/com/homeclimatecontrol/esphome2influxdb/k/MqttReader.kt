@@ -103,12 +103,13 @@ class MqttReader(
         return result
     }
 
-    override fun run() {
+    override suspend fun run() {
         ThreadContext.push("run")
         try {
-            logger.info("Started")
-            connect()
-            stopGate.await()
+            logger.info("Started endpoint: $endpoint")
+            client!!.run()
+
+            // VT: FIXME: Unreachable until refactored
             logger.info("Stopped")
         } catch (ex: InterruptedException) {
             logger.error("Interrupted, terminating", ex)
@@ -118,11 +119,6 @@ class MqttReader(
             logger.info("Shut down")
             ThreadContext.pop()
         }
-    }
-
-    private fun connect() {
-        logger.info("endpoint: $endpoint")
-        client!!.run()
     }
 
     private fun receive(message: MQTTPublish) {
