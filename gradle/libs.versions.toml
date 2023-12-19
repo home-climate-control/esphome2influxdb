@@ -12,7 +12,7 @@ log4j = "2.22.0"
 mockito = "5.8.0"
 mockito-kotlin = "2.2.0"
 paho-mqtt = "1.2.5"
-snakeyaml = "1.33"
+snakeyaml = "2.2"
 sonarqube = "4.4.1.3373"
 
 [libraries]
