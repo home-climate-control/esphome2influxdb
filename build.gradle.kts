@@ -27,8 +27,9 @@ dependencies {
     implementation(libs.log4j.core)
     implementation(libs.snakeyaml)
 
-    // https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3
-    implementation(libs.paho.mqtt.v3)
+    // https://github.com/davidepianca98/KMQTT
+    implementation(libs.kmqtt.common.jvm)
+    implementation(libs.kmqtt.client.jvm)
 
     implementation(libs.influxdb)
 

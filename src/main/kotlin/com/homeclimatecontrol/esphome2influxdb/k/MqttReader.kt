@@ -1,9 +1,16 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
+import MQTTClient
+import mqtt.MQTTVersion
+import mqtt.Subscription
+import mqtt.packets.Qos
+import mqtt.packets.mqtt.MQTTPublish
+import mqtt.packets.mqttv5.SubscriptionOptions
+import okio.internal.commonToUtf8String
 import org.apache.logging.log4j.ThreadContext
-import org.eclipse.paho.client.mqttv3.*
 import java.time.Clock
-import java.util.*
+import java.util.TreeMap
+import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.regex.Pattern
 import kotlin.collections.LinkedHashMap
@@ -18,15 +25,14 @@ import kotlin.collections.LinkedHashSet
  * @param stopGate Semaphore to listen to to initiate shutdown.
  * @param stoppedGate Semaphore to count down when the shutdown is complete.
  */
+@OptIn(ExperimentalUnsignedTypes::class)
 class MqttReader(
     e: MqttEndpoint,
     devices: Collection<Device>,
     autodiscover: Boolean,
     stopGate: CountDownLatch,
     stoppedGate: CountDownLatch
-) :
-    Worker<MqttEndpoint>(e, stoppedGate),
-    MqttCallback {
+) : Worker<MqttEndpoint>(e, stoppedGate) {
 
 
     private val clock = Clock.systemUTC()
@@ -49,29 +55,44 @@ class MqttReader(
      * VT: FIXME: Provide an ability to generate and keep a persistent UUID
      */
     val clientId = UUID.randomUUID().toString()
-    private var client: IMqttClient? = null
+    private var client: MQTTClient? = null
 
     init {
         this.devices = parseTopic(devices)
         this.autodiscover = autodiscover
         this.stopGate = stopGate
         try {
-            // Only authenticate if both credentials are present
-            if (endpoint.username != null && endpoint.password != null) {
-                client = MqttClient(
-                    "tcp://" + endpoint.username + ":" + endpoint.password + "@" + endpoint.host + ":" + endpoint.port,
-                    clientId
-                )
-            } else {
-                if (endpoint.username != null) {
-                    // Bad idea to have no password
-                    logger.warn("Missing MQTT password, connecting unauthenticated. This behavior will not be allowed in future releases.")
-                }
-                client = MqttClient("tcp://" + endpoint.host + ":" + endpoint.port, clientId)
+
+            val (username, password) = parseCredentials(endpoint.username, endpoint.password)
+
+            client = MQTTClient(
+                MQTTVersion.MQTT5,
+                endpoint.host!!,
+                endpoint.port,
+                null,
+                userName = username,
+                password = password?.toByteArray()?.toUByteArray()
+            ) {
+                receive(it)
             }
-        } catch (ex: MqttException) {
+
+            client!!.subscribe(listOf(Subscription(endpoint.topic, SubscriptionOptions(Qos.EXACTLY_ONCE))))
+
+        } catch (ex: Exception) {
             throw IllegalStateException("Failed to create a client for $endpoint")
         }
+    }
+
+    private fun parseCredentials(username: String?, password: String?): Array<String?>  {
+
+        // Only authenticate if both credentials are present
+        if (endpoint.username != null && endpoint.password != null) {
+            return arrayOf(username, password)
+        }
+
+        logger.warn("one of (username, password) is null or missing, connecting unauthenticated - THIS IS A BAD IDEA")
+
+        return arrayOf(null, null)
     }
 
     private fun parseTopic(source: Collection<Device>): MutableMap<String, Device> {
@@ -92,8 +113,6 @@ class MqttReader(
         } catch (ex: InterruptedException) {
             logger.error("Interrupted, terminating", ex)
             Thread.currentThread().interrupt()
-        } catch (ex: MqttException) {
-            logger.fatal("MQTT problem", ex)
         } finally {
             stoppedGate.countDown()
             logger.info("Shut down")
@@ -101,44 +120,21 @@ class MqttReader(
         }
     }
 
-    @Throws(MqttException::class)
     private fun connect() {
-        val options = MqttConnectOptions()
-        options.isAutomaticReconnect = true
-        options.isCleanSession = true
-        options.connectionTimeout = 10
-        options.userName = endpoint.username
-
-        // https://github.com/eclipse/paho.mqtt.java/issues/804
-        // https://github.com/home-climate-control/dz/issues/148
-        if (endpoint.password != null) {
-            options.password = endpoint.password!!.toCharArray()
-        }
-        client!!.setCallback(this)
-        client!!.connect(options)
-        client!!.subscribe(endpoint.topic, 0)
+        logger.info("endpoint: $endpoint")
+        client!!.run()
     }
 
-    override fun connectionLost(cause: Throwable) {
-        logger.error("Lost connection", cause)
-        logger.info("Attempting to reconnect")
-        try {
-            // VT: NOTE: This may not be enough, let's see how reliable this is
-            connect()
-        } catch (ex: MqttException) {
-            logger.fatal("Reconnect failed, giving up", ex)
-        }
-    }
-
-    @Throws(Exception::class)
-    override fun messageArrived(topic: String, message: MqttMessage) {
+    private fun receive(message: MQTTPublish) {
         ThreadContext.push("messageArrived")
         try {
-            val payload = message.toString()
-            logger.debug("topic={}, message={}", topic, payload)
-            if (!consume(topic, payload)) {
-                autodiscover(topic, payload)
+            val payload = message.payload?.asByteArray()?.commonToUtf8String() ?: ""
+            logger.debug("topic={}, message={}", message.topicName, payload)
+            if (!consume(message.topicName, payload)) {
+                autodiscover(message.topicName, payload)
             }
+        } catch (ex: Throwable) {
+            logger.error("Huh?", ex)
         } finally {
             ThreadContext.pop()
         }
@@ -269,10 +265,6 @@ class MqttReader(
                     + "    tags: {} # put your tags here",
             message, topicPrefix, source
         )
-    }
-
-    override fun deliveryComplete(token: IMqttDeliveryToken) {
-        // VT: NOTE: Nothing to do here, we're not sending anything
     }
 
     fun attach(writer: InfluxDbWriter) {
