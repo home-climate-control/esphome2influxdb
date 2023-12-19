@@ -29,19 +29,12 @@ import kotlin.collections.LinkedHashSet
 class MqttReader(
     e: MqttEndpoint,
     devices: Collection<Device>,
-    autodiscover: Boolean,
-    stopGate: CountDownLatch,
+    private val autodiscover: Boolean,
+    private val stopGate: CountDownLatch,
     stoppedGate: CountDownLatch
 ) : Worker<MqttEndpoint>(e, stoppedGate) {
 
-
     private val clock = Clock.systemUTC()
-    private val autodiscover: Boolean
-
-    /**
-     * The latch indicating the need to stop operation.
-     */
-    private val stopGate: CountDownLatch
 
     /**
      * Devices to listen to.
@@ -49,6 +42,7 @@ class MqttReader(
      * The key is the topic, the value is the device descriptor.
      */
     private val devices: MutableMap<String, Device>
+
     private val writers: MutableSet<InfluxDbWriter> = LinkedHashSet()
 
     /**
@@ -59,8 +53,6 @@ class MqttReader(
 
     init {
         this.devices = parseTopic(devices)
-        this.autodiscover = autodiscover
-        this.stopGate = stopGate
         try {
 
             val (username, password) = parseCredentials(endpoint.username, endpoint.password)

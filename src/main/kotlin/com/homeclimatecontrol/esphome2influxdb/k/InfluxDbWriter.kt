@@ -136,8 +136,7 @@ class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
                     queue.remove()
                     continue
                 }
-                var p: Point
-                p = try {
+                val p = try {
                     val b = Point.measurement(sample.device.getType().literal)
                         .time(sample.timestamp, TimeUnit.MILLISECONDS)
                         .tag("source", sample.device.source)
