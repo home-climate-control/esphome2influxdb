@@ -20,7 +20,8 @@ version = "1.0.1-SNAPSHOT"
 dependencies {
     implementation(libs.log4j.api)
     implementation(libs.log4j.core)
-    implementation(libs.snakeyaml)
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.dataformat.yaml)
 
     implementation(libs.hivemq.mqtt.client)
 

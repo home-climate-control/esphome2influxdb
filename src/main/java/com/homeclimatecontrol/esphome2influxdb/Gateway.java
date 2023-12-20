@@ -1,5 +1,13 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.homeclimatecontrol.esphome2influxdb.runtime.GitProperties;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
+import org.yaml.snakeyaml.scanner.ScannerException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,16 +16,15 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-import com.homeclimatecontrol.esphome2influxdb.runtime.GitProperties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.scanner.ScannerException;
-
 public class Gateway {
 
     private final Logger logger = LogManager.getLogger();
+    private final ObjectMapper objectMapper;
+
+    private Gateway() {
+
+        objectMapper = new ObjectMapper(new YAMLFactory());
+    }
 
     /**
      * Run the application.
@@ -84,9 +91,7 @@ public class Gateway {
 
             logger.info("Reading configuration from {}", source);
 
-            var yaml = new Yaml();
-
-            Configuration cf = yaml.loadAs(getStream(source), Configuration.class);
+            Configuration cf = objectMapper.readValue(getStream(source), Configuration.class);
 
             if (cf == null) {
                 throw new IllegalArgumentException("No usable configuration at " + source + "?");
@@ -94,7 +99,9 @@ public class Gateway {
 
             cf.verify();
 
-            logger.debug("configuration: {}",  cf);
+            var yaml = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(cf);
+
+            logger.debug("configuration:\n{}",  yaml);
 
             if (!cf.needToStart()) {
                 logger.info("Terminating");
