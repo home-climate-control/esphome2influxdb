@@ -15,6 +15,10 @@ esphome2influxdb: Docs
 * Currently works only with [ESPHome Sensor](https://esphome.io/components/sensor/index.html) components, more to come.
 * The project's just been open sourced, documentation is coming, keep checking this wiki for updates.
 
+## Release Notes
+
+[Here](./release-notes.md).
+
 ## Further Down the Rabbit Hole
 
 [Home Climate Control Project](https://github.com/home-climate-control/dz)
