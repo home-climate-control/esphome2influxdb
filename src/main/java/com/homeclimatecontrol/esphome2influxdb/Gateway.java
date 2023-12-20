@@ -6,7 +6,8 @@ import com.homeclimatecontrol.esphome2influxdb.runtime.GitProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
-import org.yaml.snakeyaml.scanner.ScannerException;
+import reactor.core.publisher.Flux;
+import reactor.tools.agent.ReactorDebugAgent;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,14 +16,17 @@ import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Gateway {
 
     private final Logger logger = LogManager.getLogger();
     private final ObjectMapper objectMapper;
 
-    private Gateway() {
+    private final AtomicReference<Configuration> currentConfig = new AtomicReference<>();
 
+    private Gateway() {
+        ReactorDebugAgent.init();
         objectMapper = new ObjectMapper(new YAMLFactory());
     }
 
@@ -39,7 +43,6 @@ public class Gateway {
         ThreadContext.push("run");
 
         try {
-
             Configuration cf;
 
             if (args.length == 0) {
@@ -59,15 +62,14 @@ public class Gateway {
             } else {
 
                 // It would be nice to tell them which version is running BEFORE trying to parse the configuration, in case versions are incompatible
-
                 reportGitProperties();
 
                 cf = parseConfiguration(args[0]);
             }
 
-            execute(cf);
+            execute(Flux.just(cf));
 
-        } catch (Throwable t) {
+        } catch (Throwable t) { // NOSONAR There's nobody to complain to above, need to report EVERYTHING here
             logger.fatal("Unexpected exception, terminating", t);
         } finally {
             ThreadContext.pop();
@@ -84,6 +86,7 @@ public class Gateway {
         logger.debug("git.commit.id.describe={}", p.get("git.commit.id.describe"));
         logger.debug("git.build.version={}", p.get("git.build.version"));
     }
+
     private Configuration parseConfiguration(String source) {
         ThreadContext.push("parseConfiguration");
 
@@ -110,8 +113,6 @@ public class Gateway {
 
             return cf;
 
-        } catch (ScannerException ex) {
-            throw new IllegalArgumentException("Malformed YAML while parsing " + source, ex);
         } catch (Throwable t) {
             throw new IllegalArgumentException("Unexpected exception while parsing " + source,  t);
         } finally {
@@ -160,6 +161,28 @@ public class Gateway {
      */
     private InputStream getStreamAsURL(String source) throws IOException {
         return new URL(source).openStream();
+    }
+
+    private void execute(Flux<Configuration> source) {
+
+        source
+                .map(this::reconfigure)
+                .doOnNext(this::execute)
+                .blockLast();
+    }
+
+    /**
+     * Take the configuration, reconcile with {@link #currentConfig}, and issue reconfiguration orders.
+     */
+    private Configuration reconfigure(Configuration cf) {
+        // VT: FIXME: Just reboot the whole system synchronously for now
+        stop(currentConfig.get());
+
+        return cf;
+    }
+
+    private void stop(Configuration ignore) {
+        // VT: FIXME: nothing for now, we just act upon the configuration once on startup at this point
     }
 
     /**

@@ -15,13 +15,16 @@ repositories {
 }
 
 group = "com.homeclimatecontrol.esphome2influxdb"
-version = "1.0.1-SNAPSHOT"
+version = "3.0.1-SNAPSHOT"
 
 dependencies {
     implementation(libs.log4j.api)
     implementation(libs.log4j.core)
     implementation(libs.jackson.databind)
     implementation(libs.jackson.dataformat.yaml)
+
+    implementation(libs.reactor.core)
+    implementation(libs.reactor.tools)
 
     implementation(libs.hivemq.mqtt.client)
 
@@ -75,7 +78,7 @@ sonarqube {
 jib {
 
     to {
-        image ="climategadgets/esphome2influxdb"
+        image ="climategadgets/esphome2influxdb-r"
     }
 
     container {

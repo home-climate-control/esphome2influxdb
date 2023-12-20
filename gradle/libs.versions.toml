@@ -2,13 +2,15 @@
 
 assertj = "3.24.2"
 errorprone = "2.23.0"
+hivemq-mqtt = "1.3.3"
 influxdb = "2.24"
 jackson = "2.15.2"
 jib = "3.4.0"
 junit5 = "5.10.1"
 log4j = "2.22.0"
 mockito = "5.8.0"
-hivemq-mqtt = "1.3.3"
+netty = "1.1.6"
+reactor = "3.6.0"
 sonarqube = "4.4.1.3373"
 
 [libraries]
@@ -25,6 +27,10 @@ junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref
 log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+reactor-core = { module = "io.projectreactor:reactor-core", version.ref = "reactor" }
+reactor-netty = { module = "io.projectreactor.netty:reactor-netty", version.ref = "netty" }
+reactor-test = { module = "io.projectreactor:reactor-test", version.ref = "reactor" }
+reactor-tools = { module = "io.projectreactor:reactor-tools", version.ref = "reactor" }
 
 [plugins]
 errorprone = { id = "net.ltgt.errorprone", version = "3.1.0" }
