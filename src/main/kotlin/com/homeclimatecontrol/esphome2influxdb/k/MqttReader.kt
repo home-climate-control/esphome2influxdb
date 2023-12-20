@@ -5,6 +5,7 @@ import mqtt.MQTTVersion
 import mqtt.Subscription
 import mqtt.packets.Qos
 import mqtt.packets.mqtt.MQTTPublish
+import mqtt.packets.mqttv5.ReasonCode
 import mqtt.packets.mqttv5.SubscriptionOptions
 import okio.internal.commonToUtf8String
 import org.apache.logging.log4j.ThreadContext
@@ -13,8 +14,6 @@ import java.util.TreeMap
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.regex.Pattern
-import kotlin.collections.LinkedHashMap
-import kotlin.collections.LinkedHashSet
 
 /**
  * MQTT reader.
@@ -30,7 +29,6 @@ class MqttReader(
     e: MqttEndpoint,
     devices: Collection<Device>,
     private val autodiscover: Boolean,
-    private val stopGate: CountDownLatch,
     stoppedGate: CountDownLatch
 ) : Worker<MqttEndpoint>(e, stoppedGate) {
 
@@ -98,19 +96,22 @@ class MqttReader(
     override suspend fun run() {
         ThreadContext.push("run")
         try {
-            logger.info("Started endpoint: $endpoint")
-            client!!.run()
+            logger.info("{}: started", endpoint)
 
-            // VT: FIXME: Unreachable until refactored
-            logger.info("Stopped")
-        } catch (ex: InterruptedException) {
-            logger.error("Interrupted, terminating", ex)
-            Thread.currentThread().interrupt()
+            client!!.run()
+            logger.debug("{}: run() done", endpoint)
+
         } finally {
             stoppedGate.countDown()
-            logger.info("Shut down")
+            logger.info("{}: shut down", endpoint)
             ThreadContext.pop()
         }
+    }
+
+    override suspend fun stop() {
+        logger.warn("{}: stopped", endpoint)
+        client?.disconnect(ReasonCode.DISCONNECT_WITH_WILL_MESSAGE)
+        logger.info("{}: disconnected", endpoint)
     }
 
     private fun receive(message: MQTTPublish) {

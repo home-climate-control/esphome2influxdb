@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.yaml.snakeyaml.Yaml
-import java.util.*
+import java.util.UUID
 
 class DeviceTest {
 
@@ -124,14 +124,14 @@ class DeviceTest {
     fun render() {
         val td = TestDevice()
         assertEquals(
-            "{class=com.homeclimatecontrol.esphome2influxdb.k.DeviceTest\$TestDevice,topic=null,source=null,name=null,type=climate,tags={}",
+            "{class=TestDevice,topic=null,source=null,name=null,type=climate,tags={}",
             td.toString(), "localhost:0"
         )
 
         val name = UUID.randomUUID().toString()
         td.name = name
         org.junit.jupiter.api.Assertions.assertEquals(
-            "{class=com.homeclimatecontrol.esphome2influxdb.k.DeviceTest\$TestDevice,topic=null,source=null,name=$name,type=climate,tags={}",
+            "{class=TestDevice,topic=null,source=null,name=$name,type=climate,tags={}",
             td.toString()
         )
     }

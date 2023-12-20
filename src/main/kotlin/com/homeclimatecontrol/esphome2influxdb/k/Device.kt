@@ -3,7 +3,7 @@ package com.homeclimatecontrol.esphome2influxdb.k
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.ThreadContext
-import java.util.*
+import java.util.TreeMap
 
 /**
  * @param topicPrefix MQTT topic prefix to read updates from. Unlike [MqttEndpoint.topic] filter which is passed to [MqttReader], this filter will be applied locally.
@@ -155,5 +155,5 @@ abstract class Device(
 
         return result
     }
-    override fun toString() = "{class=${javaClass.name},topic=$topicPrefix,source=$source,name=$name,type=${getType().literal},tags=$tags"
+    override fun toString() = "{class=${javaClass.simpleName},topic=$topicPrefix,source=$source,name=$name,type=${getType().literal},tags=$tags"
 }

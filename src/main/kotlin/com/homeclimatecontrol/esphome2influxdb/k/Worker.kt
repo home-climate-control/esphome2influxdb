@@ -13,5 +13,6 @@ abstract class Worker<T : Endpoint>(
     protected val stoppedGate: CountDownLatch
 ) {
     protected val logger: Logger = LogManager.getLogger()
-    public abstract suspend fun run();
+    abstract suspend fun run();
+    abstract suspend fun stop();
 }

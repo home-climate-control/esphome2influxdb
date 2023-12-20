@@ -49,7 +49,7 @@ open class Endpoint : Verifiable {
 
     protected open fun render() : String {
 
-        val part1 = "class=${javaClass.name},name=$name,host:port=$host:$port"
+        val part1 = "class=${javaClass.simpleName},name=$name,host:port=$host:$port"
 
         if (username == null && password == null) {
             return part1

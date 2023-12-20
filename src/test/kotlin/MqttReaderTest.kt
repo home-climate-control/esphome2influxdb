@@ -35,9 +35,8 @@ class MqttReaderTest {
         devices[key0] = s0
         devices[key1] = s1
 
-        val stopGate = CountDownLatch(1)
         val stoppedGate = CountDownLatch(1)
-        val r = MqttReader(e, devices.values, false, stopGate, stoppedGate)
+        val r = MqttReader(e, devices.values, false, stoppedGate)
         val writers = LinkedHashSet<InfluxDbWriter>()
         val topic0 = "$key0/state"
         val topic1 = "$key1/state"

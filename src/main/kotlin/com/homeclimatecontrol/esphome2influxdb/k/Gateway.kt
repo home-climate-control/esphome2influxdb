@@ -15,8 +15,6 @@ import kotlin.system.exitProcess
 
 class Gateway {
 
-    private val dispatcher: CoroutineDispatcher  = Dispatchers.IO
-
     companion object {
         /**
          * Run the application.
@@ -30,6 +28,7 @@ class Gateway {
     }
 
     private val logger = LogManager.getLogger()
+    private val dispatcher: CoroutineDispatcher  = Dispatchers.IO
 
     fun run(args: Array<String>) {
         ThreadContext.push("run")
@@ -118,12 +117,11 @@ class Gateway {
         ThreadContext.push("execute")
 
         try {
-            val stopGate = CountDownLatch(1)
             val stoppedGate = CountDownLatch(cf.sources!!.size + cf.targets!!.size)
             val readers: MutableSet<MqttReader> = LinkedHashSet()
             val writers: MutableSet<InfluxDbWriter> = LinkedHashSet()
             for (e in cf.sources!!) {
-                readers.add(MqttReader(e, cf.getParsedDevices(), cf.autodiscover, stopGate, stoppedGate))
+                readers.add(MqttReader(e, cf.getParsedDevices(), cf.autodiscover, stoppedGate))
             }
             for (e in cf.targets!!) {
                 writers.add(InfluxDbWriter(e, readers, stoppedGate))
@@ -131,43 +129,46 @@ class Gateway {
 
             // Preparation is complete, start everything and enjoy the show.
 
-            val readerJobs = mutableListOf<Job>()
-            val writerJobs = mutableListOf<Job>()
-
             // VT: NOTE: This syntax is the only way to get rid of nagging about hardcoded dispatchers. Sorry, that's the only one I need.
             withContext(this@Gateway.dispatcher) {
+
                 for (r in readers) {
-                    readerJobs.add(
-                        launch {
-                            r.run()
-                        })
+                    launch {
+                        r.run()
+                    }
                 }
-                logger.info("Started {} reader[s]", readerJobs.size)
+                logger.info("Started {} reader[s]", readers.size)
 
                 for (w in writers) {
-                    writerJobs.add(
-                        launch {
-                            w.run()
-                        })
+                    launch {
+                        w.run()
+                    }
                 }
-                logger.info("Started {} writer[s]", writerJobs.size)
+                logger.info("Started {} writer[s]", writers.size)
+
+                // Ctrl-C or SIGTERM are now the only ways to terminate this process.
+
+                Runtime.getRuntime().addShutdownHook(object : Thread() {
+                    override fun run() = runBlocking {
+                        logger.warn("Shutting down")
+
+                        for (worker in readers.plus(writers)) {
+                            worker.stop()
+                        }
+                        logger.warn("Waiting for all workers to terminate...")
+                        stoppedGate.await()
+                        logger.warn("Shut down.")
+                    }
+                })
+
+                // Logged at WARN so that it is easier to see in the log
+                logger.warn("Startup complete, sleeping until killed")
+
+                while (true) {
+                    delay(10000)
+                }
             }
 
-            // Ctrl-C or SIGTERM are now the only ways to terminate this process.
-
-            // VT: FIXME: Implement the rest of the lifecycle
-            while (true) {
-                delay(60000)
-            }
-
-            stopGate.countDown()
-            logger.info("Shutting down")
-            stoppedGate.await()
-            logger.info("All workers shut down, terminating")
-            throw IllegalStateException("Not Implemented")
-        } catch (ex: InterruptedException) {
-            logger.error("Interrupted, terminating", ex)
-            Thread.currentThread().interrupt()
         } finally {
             ThreadContext.pop()
         }

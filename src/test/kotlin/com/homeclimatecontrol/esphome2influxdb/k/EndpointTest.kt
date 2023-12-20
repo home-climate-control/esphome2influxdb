@@ -1,8 +1,8 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID
 
 class EndpointTest {
     @Test
@@ -19,13 +19,13 @@ class EndpointTest {
     fun render() {
         val e = Endpoint()
         assertEquals(
-            "{class=com.homeclimatecontrol.esphome2influxdb.k.Endpoint,name=localhost:0,host:port=localhost:0}",
+            "{class=Endpoint,name=localhost:0,host:port=localhost:0}",
             e.toString(), "localhost:0")
 
         val name = UUID.randomUUID().toString()
         e.name = name
         assertEquals(
-            "{class=com.homeclimatecontrol.esphome2influxdb.k.Endpoint,name=$name,host:port=localhost:0}",
+            "{class=Endpoint,name=$name,host:port=localhost:0}",
             e.toString())
     }
 }

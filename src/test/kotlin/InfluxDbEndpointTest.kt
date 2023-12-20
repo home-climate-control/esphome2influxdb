@@ -26,12 +26,12 @@ class InfluxDbEndpointTest {
     fun render() {
         val e = InfluxDbEndpoint()
         assertEquals(
-            "{class=com.homeclimatecontrol.esphome2influxdb.k.InfluxDbEndpoint,name=localhost:8086,host:port=localhost:8086,url=http://localhost:8086,db=esphome}",
+            "{class=InfluxDbEndpoint,name=localhost:8086,host:port=localhost:8086,url=http://localhost:8086,db=esphome}",
             e.toString())
 
         e.url = "https://outside:9999"
         assertEquals(
-            "{class=com.homeclimatecontrol.esphome2influxdb.k.InfluxDbEndpoint,name=outside:9999,host:port=outside:9999,url=https://outside:9999,db=esphome}",
+            "{class=InfluxDbEndpoint,name=outside:9999,host:port=outside:9999,url=https://outside:9999,db=esphome}",
             e.toString())
     }
 

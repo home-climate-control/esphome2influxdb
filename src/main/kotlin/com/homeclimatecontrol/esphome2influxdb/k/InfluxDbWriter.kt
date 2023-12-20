@@ -1,6 +1,5 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
-import kotlinx.coroutines.delay
 import org.apache.logging.log4j.ThreadContext
 import org.influxdb.InfluxDB
 import org.influxdb.InfluxDBFactory
@@ -8,7 +7,7 @@ import org.influxdb.dto.Point
 import org.influxdb.dto.Query
 import java.math.BigDecimal
 import java.time.Clock
-import java.util.*
+import java.util.Queue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -34,23 +33,23 @@ class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
         ThreadContext.push("run")
 
         try {
-            logger.info("Started")
+            logger.info("{}: started", endpoint)
             connect()
             db!!.enableBatch()
             db!!.query(Query("CREATE DATABASE " + endpoint.db))
             db!!.setDatabase(endpoint.db)
 
-            // VT: FIXME: Implement the rest of the lifecycle
-            while (true) {
-                delay(60000)
-            }
-        } catch (ex: InterruptedException) {
-            logger.error("Interrupted, terminating", ex)
+            logger.info("{}: connected", endpoint)
+
         } finally {
             stoppedGate.countDown()
-            logger.info("Shut down")
+            logger.info("{}: done", endpoint)
             ThreadContext.pop()
         }
+    }
+
+    override suspend fun stop() {
+        // Nothing to do here, run() has already ended by now
     }
 
     /**
