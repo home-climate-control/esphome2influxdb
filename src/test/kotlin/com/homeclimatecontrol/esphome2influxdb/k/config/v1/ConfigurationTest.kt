@@ -1,8 +1,9 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.config.v1
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.ThreadContext
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatCode
 import org.junit.jupiter.api.Test
 import org.yaml.snakeyaml.Yaml
 
@@ -21,7 +22,7 @@ class ConfigurationTest {
             )
             logger.info("loaded: {}", c)
             c.verify()
-            Assertions.assertThat(c.needToStart()).isFalse
+            assertThat(c.needToStart()).isFalse
         } finally {
             ThreadContext.pop()
         }
@@ -36,10 +37,10 @@ class ConfigurationTest {
                 Configuration::class.java
             )
             logger.info("loaded: {}", c)
-            Assertions.assertThat(c!!.sources).hasSize(2)
+            assertThat(c!!.sources).hasSize(2)
             val `is` = c.sources!!.iterator()
-            Assertions.assertThat(`is`.next().port).isEqualTo(8888)
-            Assertions.assertThat(`is`.next().port).isEqualTo(9999)
+            assertThat(`is`.next().port).isEqualTo(8888)
+            assertThat(`is`.next().port).isEqualTo(9999)
         } finally {
             ThreadContext.pop()
         }
@@ -55,21 +56,21 @@ class ConfigurationTest {
             )
             logger.info("loaded: {}", c)
             val targets = c!!.targets
-            Assertions.assertThat(targets).hasSize(3)
+            assertThat(targets).hasSize(3)
             run {
                 val i = targets!!.iterator()
                 val local = i.next()
-                Assertions.assertThat(local.host).isEqualTo("localhost")
-                Assertions.assertThat(local.port).isEqualTo(8086)
-                Assertions.assertThat(local.db).isEqualTo("esphome")
+                assertThat(local.host).isEqualTo("localhost")
+                assertThat(local.port).isEqualTo(8086)
+                assertThat(local.db).isEqualTo("esphome")
                 val remote = i.next()
-                Assertions.assertThat(remote.host).isEqualTo("remote")
-                Assertions.assertThat(remote.port).isEqualTo(9999)
-                Assertions.assertThat(remote.db).isEqualTo("remote-db")
+                assertThat(remote.host).isEqualTo("remote")
+                assertThat(remote.port).isEqualTo(9999)
+                assertThat(remote.db).isEqualTo("remote-db")
                 val backup = i.next()
-                Assertions.assertThat(backup.host).isEqualTo("backup")
-                Assertions.assertThat(backup.port).isEqualTo(1111)
-                Assertions.assertThat(backup.db).isEqualTo("backup-db")
+                assertThat(backup.host).isEqualTo("backup")
+                assertThat(backup.port).isEqualTo(1111)
+                assertThat(backup.db).isEqualTo("backup-db")
             }
             c.verify()
         } finally {
@@ -81,7 +82,7 @@ class ConfigurationTest {
     fun raw() {
         ThreadContext.push("raw")
         try {
-            Assertions.assertThatCode {
+            assertThatCode {
                 val c = yaml.load<Any?>(
                     javaClass.classLoader.getResourceAsStream("instantiate-configuration-complete.yaml")
                 )

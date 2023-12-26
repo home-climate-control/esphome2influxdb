@@ -1,9 +1,12 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.config.v1
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.ThreadContext
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.yaml.snakeyaml.Yaml
 import java.util.UUID
@@ -22,11 +25,11 @@ class DeviceTest {
                 Sensor::class.java
             )
             logger.info("loaded: {}", s)
-            Assertions.assertThat(s).isNotNull
-            Assertions.assertThat(s.topicPrefix).isEqualTo("/esphome/67db2c")
+            assertThat(s).isNotNull
+            assertThat(s.topicPrefix).isEqualTo("/esphome/67db2c")
             s.verify()
-            Assertions.assertThat(s.source).isEqualTo("1b0300a279691428")
-            Assertions.assertThat(s.name).isEqualTo("1b0300a279691428")
+            assertThat(s.source).isEqualTo("1b0300a279691428")
+            assertThat(s.name).isEqualTo("1b0300a279691428")
         } finally {
             ThreadContext.pop()
         }
@@ -41,11 +44,11 @@ class DeviceTest {
                 Sensor::class.java
             )
             logger.info("loaded: {}", s)
-            Assertions.assertThat(s).isNotNull
-            Assertions.assertThat(s.topicPrefix).isEqualTo("/esphome/67db2c/sensor/1b0300a279691428")
+            assertThat(s).isNotNull
+            assertThat(s.topicPrefix).isEqualTo("/esphome/67db2c/sensor/1b0300a279691428")
             s.verify()
-            Assertions.assertThat(s.source).isEqualTo("1b0300a279691428")
-            Assertions.assertThat(s.name).isEqualTo("1b0300a279691428")
+            assertThat(s.source).isEqualTo("1b0300a279691428")
+            assertThat(s.name).isEqualTo("1b0300a279691428")
         } finally {
             ThreadContext.pop()
         }
@@ -55,17 +58,17 @@ class DeviceTest {
     fun sensor2() {
         ThreadContext.push("sensor2")
         try {
-            Assertions.assertThatIllegalArgumentException().isThrownBy {
+            assertThatIllegalArgumentException().isThrownBy {
                 val s =
                     yaml.loadAs(
                         javaClass.classLoader.getResourceAsStream("instantiate-device-sensor2.yaml"),
                         Sensor::class.java
                     )
                 logger.info("loaded: {}", s)
-                Assertions.assertThat(s).isNotNull
-                Assertions.assertThat(s.topicPrefix).isEqualTo("/esphome/67db2c")
+                assertThat(s).isNotNull
+                assertThat(s.topicPrefix).isEqualTo("/esphome/67db2c")
                 s.verify()
-                org.junit.jupiter.api.Assertions.fail<Any>("should've failed by now")
+                fail<Any>("should've failed by now")
             }.withMessage("Short topic provided, must specify the source")
         } finally {
             ThreadContext.pop()
@@ -76,17 +79,17 @@ class DeviceTest {
     fun sensor3() {
         ThreadContext.push("sensor3")
         try {
-            Assertions.assertThatIllegalArgumentException().isThrownBy {
+            assertThatIllegalArgumentException().isThrownBy {
                 val s =
                     yaml.loadAs(
                         javaClass.classLoader.getResourceAsStream("instantiate-device-sensor3.yaml"),
                         Sensor::class.java
                     )
                 logger.info("loaded: {}", s)
-                org.junit.jupiter.api.Assertions.assertNotNull(s)
-                org.junit.jupiter.api.Assertions.assertEquals("/esphome/67db2c/sensor/1b0300a279691428", s.topicPrefix)
+                assertNotNull(s)
+                assertEquals("/esphome/67db2c/sensor/1b0300a279691428", s.topicPrefix)
                 s.verify()
-                org.junit.jupiter.api.Assertions.fail<Any>("should've failed by now")
+                fail<Any>("should've failed by now")
             }.withMessage("Long topic provided, must not specify the source")
         } finally {
             ThreadContext.pop()
@@ -102,19 +105,19 @@ class DeviceTest {
                 Sensor::class.java
             )
             logger.info("loaded: {}", s)
-            Assertions.assertThat(s).isNotNull
-            Assertions.assertThat(s.topicPrefix).isEqualTo("/esphome/67db2c")
+            assertThat(s).isNotNull
+            assertThat(s.topicPrefix).isEqualTo("/esphome/67db2c")
             s.verify()
-            Assertions.assertThat(s.source).isEqualTo("1b0300a279691428")
-            Assertions.assertThat(s.name).isEqualTo("1b0300a279691428")
-            Assertions.assertThat(s.tags).hasSize(2)
+            assertThat(s.source).isEqualTo("1b0300a279691428")
+            assertThat(s.name).isEqualTo("1b0300a279691428")
+            assertThat(s.tags).hasSize(2)
             val i: Iterator<Map.Entry<String, String>> = s.tags.entries.iterator()
             val (key, value) = i.next()
-            Assertions.assertThat(key).isEqualTo("a")
-            Assertions.assertThat(value).isEqualTo("0")
+            assertThat(key).isEqualTo("a")
+            assertThat(value).isEqualTo("0")
             val (key1, value1) = i.next()
-            Assertions.assertThat(key1).isEqualTo("z")
-            Assertions.assertThat(value1).isEqualTo("25")
+            assertThat(key1).isEqualTo("z")
+            assertThat(value1).isEqualTo("25")
         } finally {
             ThreadContext.pop()
         }
@@ -130,7 +133,7 @@ class DeviceTest {
 
         val name = UUID.randomUUID().toString()
         td.name = name
-        org.junit.jupiter.api.Assertions.assertEquals(
+        assertEquals(
             "{class=TestDevice,topic=null,source=null,name=$name,type=climate,tags={}",
             td.toString()
         )

@@ -1,4 +1,4 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.config.v1
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

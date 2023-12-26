@@ -1,5 +1,6 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.com.homeclimatecontrol.esphome2influxdb.k.config.v1
 
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.InfluxDbEndpoint
 import org.apache.logging.log4j.LogManager
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test

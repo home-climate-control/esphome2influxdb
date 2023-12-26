@@ -1,5 +1,7 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out
 
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.InfluxDbEndpoint
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Sensor
 import org.apache.logging.log4j.ThreadContext
 import org.assertj.core.api.Assertions
 import org.influxdb.InfluxDB

@@ -1,5 +1,9 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`
 
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out.InfluxDbWriter
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Device
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.MqttEndpoint
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Sensor
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

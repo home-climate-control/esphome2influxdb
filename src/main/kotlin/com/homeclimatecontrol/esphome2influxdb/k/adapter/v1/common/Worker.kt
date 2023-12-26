@@ -1,5 +1,6 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.common
 
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Endpoint
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.util.concurrent.CountDownLatch

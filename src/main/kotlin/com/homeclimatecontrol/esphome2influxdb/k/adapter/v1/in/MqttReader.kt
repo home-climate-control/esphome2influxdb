@@ -1,6 +1,11 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`
 
 import MQTTClient
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.common.Worker
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out.InfluxDbWriter
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Device
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.MqttEndpoint
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Sensor
 import mqtt.MQTTVersion
 import mqtt.Subscription
 import mqtt.packets.Qos
@@ -21,7 +26,6 @@ import java.util.regex.Pattern
  * @param e Endpoint configuration to connect to.
  * @param devices Set of previously configured devices to render the feed for.
  * @param autodiscover `true` if newly discovered devices get their own feed automatically.
- * @param stopGate Semaphore to listen to to initiate shutdown.
  * @param stoppedGate Semaphore to count down when the shutdown is complete.
  */
 @OptIn(ExperimentalUnsignedTypes::class)

@@ -1,5 +1,9 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out
 
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.common.Worker
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`.MqttReader
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Device
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.InfluxDbEndpoint
 import org.apache.logging.log4j.ThreadContext
 import org.influxdb.InfluxDB
 import org.influxdb.InfluxDBFactory
@@ -12,7 +16,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
-class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
+public class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
     Worker<InfluxDbEndpoint>(endpoint, stoppedGate) {
 
     private val clock = Clock.systemUTC()
@@ -21,8 +25,8 @@ class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
     private val queue: Queue<Sample> = LinkedBlockingQueue()
     private val QUEUE_MAX = 1024
     constructor(e: InfluxDbEndpoint,
-        readers: Set<MqttReader>,
-        stoppedGate: CountDownLatch
+                readers: Set<MqttReader>,
+                stoppedGate: CountDownLatch
     ): this(e, stoppedGate) {
         for (r in readers) {
             r.attach(this)

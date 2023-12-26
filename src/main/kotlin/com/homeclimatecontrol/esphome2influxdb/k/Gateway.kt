@@ -1,5 +1,10 @@
 package com.homeclimatecontrol.esphome2influxdb.k
 
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`.MqttReader
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out.InfluxDbWriter
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Configuration
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.InfluxDbEndpoint
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.MqttEndpoint
 import com.homeclimatecontrol.esphome2influxdb.k.runtime.GitProperties
 import kotlinx.coroutines.*
 import org.apache.logging.log4j.LogManager

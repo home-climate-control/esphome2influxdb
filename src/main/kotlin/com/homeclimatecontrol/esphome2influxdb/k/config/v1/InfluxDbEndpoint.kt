@@ -1,4 +1,4 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.config.v1
 
 import java.net.MalformedURLException
 import java.net.URL

@@ -1,4 +1,4 @@
-package com.homeclimatecontrol.esphome2influxdb.k
+package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
