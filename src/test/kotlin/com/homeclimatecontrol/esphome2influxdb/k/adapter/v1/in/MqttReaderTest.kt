@@ -1,18 +1,26 @@
 package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`
 
 import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out.InfluxDbWriter
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out.Writer
 import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Device
+import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Endpoint
 import com.homeclimatecontrol.esphome2influxdb.k.config.v1.MqttEndpoint
 import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Sensor
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
+import kotlinx.coroutines.*
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import java.util.concurrent.CountDownLatch
 
+@EnabledIfEnvironmentVariable(
+    named = "TEST_ESPHOME2INFLUXDB",
+    matches = "safe",
+    disabledReason = "Only execute this test if a suitable MQTT broker and InfluxDB database are available"
+)
 class MqttReaderTest {
-    @Disabled("Only run this test if it matches your infrastructure")
+
     @Test
     fun testTopicMatch() {
 
@@ -69,7 +77,7 @@ class MqttReaderTest {
             }
         }
 
-        Assertions.assertSame(s0, deviceCaptor.lastValue)
+        assertSame(s0, deviceCaptor.lastValue)
 
         // Take two
         for (d in devices.entries) {
@@ -81,6 +89,54 @@ class MqttReaderTest {
         }
 
         // This assertion will fail until https://github.com/home-climate-control/esphome2influxdb/issues/1 is not fixed
-        Assertions.assertSame(s1, deviceCaptor.lastValue)
+        assertSame(s1, deviceCaptor.lastValue)
+    }
+
+    @Test
+    fun take5() {
+
+        val endpoint = MqttEndpoint()
+
+        endpoint.host = "mqtt-esphome"
+        val reader = MqttReader(endpoint, listOf())
+        val writer = TestWriter(Endpoint(), reader)
+        reader.attach(writer)
+
+        CoroutineScope(Dispatchers.IO).launch { reader.run() }
+
+        runBlocking {
+
+            while (writer.running) {
+                delay(100)
+            }
+        }
+    }
+
+    private class TestWriter(
+        e: Endpoint,
+        val r: MqttReader
+    ): Writer<Endpoint>(e, CountDownLatch(1)) {
+
+        private var count: Int = 0
+        var running: Boolean = true
+
+        override fun consume(timestamp: Long, device: Device, payload: String) {
+            logger.info("consume: count=$count, device=$device, payload=$payload")
+
+            if (count++ >= 5) {
+                logger.warn("stopping")
+                running = false
+                runBlocking { r.stop() }
+            }
+        }
+
+        override suspend fun run() {
+            // Do nothing
+        }
+
+        override suspend fun stop() {
+            // Do nothing
+        }
+
     }
 }

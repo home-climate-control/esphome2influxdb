@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.support.CompiledKotlinBuildScript
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -22,6 +21,7 @@ group = "com.homeclimatecontrol.esphome2influxdb"
 version = "2.0.1-SNAPSHOT"
 
 dependencies {
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.log4j.api)
     implementation(libs.log4j.core)
@@ -33,15 +33,17 @@ dependencies {
 
     implementation(libs.influxdb)
 
+    runtimeOnly(libs.kotlinx.coroutines.core.jvm)
+
     testImplementation(libs.junit5.api)
     testImplementation(libs.junit5.params)
     testImplementation(libs.mockito)
     testImplementation(libs.mockito.kotlin)
-    testRuntimeOnly(libs.junit5.engine)
     testImplementation(libs.assertj.core)
-    errorprone(libs.errorprone)
 
-    runtimeOnly(libs.kotlinx.coroutines.core.jvm)
+    testRuntimeOnly(libs.junit5.engine)
+
+    errorprone(libs.errorprone)
 }
 
 application {

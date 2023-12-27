@@ -1,13 +1,15 @@
-package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`
+package com.homeclimatecontrol.esphome2influxdb.k.adapter.v2.`in`
 
 import MQTTClient
-import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.common.Worker
-import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out.Writer
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`.MqttReader
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v2.common.Sample
+import com.homeclimatecontrol.esphome2influxdb.k.adapter.v2.common.Worker
 import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Device
-import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Endpoint
 import com.homeclimatecontrol.esphome2influxdb.k.config.v1.MqttEndpoint
 import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Sensor
 import com.homeclimatecontrol.esphome2influxdb.k.runtime.InstanceIdProvider
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import mqtt.MQTTVersion
 import mqtt.Subscription
 import mqtt.packets.Qos
@@ -16,28 +18,15 @@ import mqtt.packets.mqttv5.ReasonCode
 import mqtt.packets.mqttv5.SubscriptionOptions
 import okio.internal.commonToUtf8String
 import org.apache.logging.log4j.ThreadContext
-import java.time.Clock
+import java.time.Instant
 import java.util.TreeMap
-import java.util.concurrent.CountDownLatch
-import java.util.regex.Pattern
 
-/**
- * MQTT reader.
- *
- * @param e Endpoint configuration to connect to.
- * @param devices Set of previously configured devices to render the feed for.
- * @param autodiscover `true` if newly discovered devices get their own feed automatically.
- * @param stoppedGate Semaphore to count down when the shutdown is complete.
- */
 @OptIn(ExperimentalUnsignedTypes::class)
 class MqttReader(
     e: MqttEndpoint,
     devices: Collection<Device>,
     private val autodiscover: Boolean = true,
-    stoppedGate: CountDownLatch = CountDownLatch(1)
-) : Worker<MqttEndpoint>(e, stoppedGate) {
-
-    private val clock = Clock.systemUTC()
+): Worker<MqttEndpoint>(e), Reader {
 
     /**
      * Devices to listen to.
@@ -46,18 +35,56 @@ class MqttReader(
      */
     private val devices: MutableMap<String, Device>
 
-    private val writers: MutableSet<Writer<out Endpoint>> = LinkedHashSet()
-
     val clientId = InstanceIdProvider.getId()
-    private var client: MQTTClient? = null
+    private lateinit var client: MQTTClient
+
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val messageSink = MutableSharedFlow<MQTTPublish>()
+    private val sampleSink = MutableSharedFlow<Sample>()
 
     init {
         this.devices = parseTopic(devices)
+
+        listen()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun listen() {
+
+        ioScope.launch {
+
+            flowOf(0)
+                .flowOn(Dispatchers.IO)
+                .flatMapConcat { getClient() }
+                .collect {
+                    subscribe(it)
+                    logger.debug("running until closed")
+                    it.run()
+                }
+        }
+
+        ioScope.launch {
+        messageSink
+            .asSharedFlow()
+            .map { receive(it) }
+            .collect {
+                // Nothing to do here
+            }
+        }
+    }
+
+    private fun subscribe(client: MQTTClient) {
+        client.subscribe(listOf(Subscription(endpoint.topic, SubscriptionOptions(Qos.EXACTLY_ONCE))))
+        logger.info("$endpoint: subscribed")
+        this.client = client
+    }
+
+    private fun getClient(): Flow<MQTTClient> {
+
         try {
 
             val (username, password) = parseCredentials(endpoint.username, endpoint.password)
-
-            client = MQTTClient(
+            val client = MQTTClient(
                 MQTTVersion.MQTT5,
                 endpoint.host!!,
                 endpoint.port,
@@ -66,14 +93,24 @@ class MqttReader(
                 userName = username,
                 password = password?.toByteArray()?.toUByteArray()
             ) {
-                receive(it)
+
+                // Unless this is done in a blocking way, we're going to end up with seriously out of order messages,
+                // especially upon connecting, and especially if processing is heavy
+                runBlocking(Dispatchers.IO) {
+                    enqueue(it)
+                }
             }
 
-            client!!.subscribe(listOf(Subscription(endpoint.topic, SubscriptionOptions(Qos.EXACTLY_ONCE))))
+            logger.info("$endpoint: created client")
+            return flowOf(client)
 
         } catch (ex: Exception) {
             throw IllegalStateException("Failed to create a client for $endpoint")
         }
+    }
+
+    private suspend fun enqueue(message: MQTTPublish) {
+        messageSink.emit(message)
     }
 
     private fun parseCredentials(username: String?, password: String?): Array<String?>  {
@@ -96,32 +133,17 @@ class MqttReader(
         return result
     }
 
-    override suspend fun run() {
-        ThreadContext.push("run")
-        try {
-            logger.info("{}: started", endpoint)
-
-            client!!.run()
-            logger.debug("{}: run() done", endpoint)
-
-        } finally {
-            stoppedGate.countDown()
-            logger.info("{}: shut down", endpoint)
-            ThreadContext.pop()
-        }
-    }
-
-    override suspend fun stop() {
-        logger.warn("{}: stopped", endpoint)
-        client?.disconnect(ReasonCode.DISCONNECT_WITH_WILL_MESSAGE)
-        logger.info("{}: disconnected", endpoint)
-    }
-
-    private fun receive(message: MQTTPublish) {
+    private suspend fun receive(message: MQTTPublish) {
         ThreadContext.push("messageArrived")
         try {
+
+            // VT: NOTE: This will dump ALL the message, side effect being transforming the payload twice - performance hit.
+            // Uncomment only if there's *real* trouble.
+
+            //logger.trace("message: ${message.dump()}")
+
             val payload = message.payload?.asByteArray()?.commonToUtf8String() ?: ""
-            logger.debug("topic={}, message={}", message.topicName, payload)
+            logger.trace("topic={}, message={}", message.topicName, payload)
             if (!consume(message.topicName, payload)) {
                 autodiscover(message.topicName, payload)
             }
@@ -140,28 +162,26 @@ class MqttReader(
      *
      * @return `true` if the message was consumed.
      */
-    private fun consume(topic: String, payload: String): Boolean {
+    private suspend fun consume(topic: String, payload: String): Boolean {
         for (d: Map.Entry<String, Device> in devices.entries) {
 
             // Only the first match is considered, any other way doesn't make sense
-            if (consume(d, topic, payload, writers)) {
+            if (consume(d, topic, payload)) {
                 return true
             }
         }
         return false
     }
-
     /**
      * Consume an MQTT message if the device matches.
      *
      * @param d Device descriptor.
      * @param topic MQTT topic.
      * @param payload MQTT message payload.
-     * @param writers InfluxDB writers to pass the message to.
      *
      * @return `true` if the message was consumed.
      */
-    fun consume(d: Map.Entry<String, Device>, topic: String, payload: String, writers: Set<Writer<out Endpoint>>): Boolean {
+    suspend fun consume(d: Map.Entry<String, Device>, topic: String, payload: String): Boolean {
 
         // Save ourselves extra memory allocation
         if (!topic.startsWith(d.key)) {
@@ -175,12 +195,8 @@ class MqttReader(
             return false
         }
         logger.debug("match: {}", d.value.name)
+        sampleSink.emit(Sample(clock.instant(), d.value, payload))
 
-        // Let's generate the timestamp once so that several writers get the same
-        val timestamp = clock.instant().toEpochMilli()
-        for (w in writers) {
-            w.consume(timestamp, d.value, payload)
-        }
         return true
     }
 
@@ -198,7 +214,7 @@ class MqttReader(
      * @param payload MQTT message payload (VT: FIXME: unused now,
      * but will be used later when autodiscovered devices will be activated immediately)
      */
-    private fun autodiscover(topic: String, payload: String) {
+    private suspend fun autodiscover(topic: String, payload: String) {
         ThreadContext.push("autodiscover")
         try {
             if (knownTopics.contains(topic)) {
@@ -209,7 +225,7 @@ class MqttReader(
             logger.debug("candidate: {}", topic)
 
             // VT: FIXME: Just the sensor for now
-            val m = patternSensor.matcher(topic)
+            val m = MqttReader.patternSensor.matcher(topic)
             if (m.matches()) {
                 val topicPrefix = m.group(1)
                 val name = m.group(2)
@@ -264,13 +280,43 @@ class MqttReader(
         )
     }
 
-    fun attach(writer: Writer<out Endpoint>) {
-        writers.add(writer)
+    override fun read(): Flow<Sample> {
+        return sampleSink
     }
 
-    companion object {
-        var patternClimate = Pattern.compile("(.*)/climate/(.*)/mode/state")
-        var patternSensor = Pattern.compile("(.*)/sensor/(.*)/state")
-        var patternSwitch = Pattern.compile("(.*)/switch/(.*)/state")
+    override fun close() {
+        logger.warn("$endpoint: closed")
+
+        // VT: FIXME: MutableSharedFlow can't be complete()d like a Flux or a channel, will need a fix for that (up to replacing it)
+
+        // It is possible that close() is called while the client is still starting; let's wait a bit
+
+        var disconnected = false
+
+        for (retryCount in 1..5) {
+            try {
+
+                client.disconnect(ReasonCode.DISCONNECT_WITH_WILL_MESSAGE)
+                logger.info("$endpoint: disconnected")
+                disconnected = true
+                break
+
+            } catch (ex: UninitializedPropertyAccessException) {
+
+                // This is possible if the client is closed very early into its life, say, if there are unrelated problems and everything shuts down
+                logger.warn("MQTT client is close()d before initialized, retry $retryCount/5")
+
+                runBlocking { delay(500) }
+            }
+        }
+
+        if (!disconnected) {
+            logger.error("failed to disconnect from $endpoint, are we hung?")
+        }
     }
+}
+
+@OptIn(ExperimentalUnsignedTypes::class)
+fun MQTTPublish.dump(): String {
+    return "${this::class.simpleName}(retain=$retain, qos=$qos, dup=$dup, topic=$topicName, packetId=$packetId, payload=${payload?.asByteArray()?.commonToUtf8String()}, timestamp=${Instant.ofEpochMilli(timestamp)})"
 }

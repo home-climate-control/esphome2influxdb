@@ -1,6 +1,5 @@
 package com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.out
 
-import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.common.Worker
 import com.homeclimatecontrol.esphome2influxdb.k.adapter.v1.`in`.MqttReader
 import com.homeclimatecontrol.esphome2influxdb.k.config.v1.Device
 import com.homeclimatecontrol.esphome2influxdb.k.config.v1.InfluxDbEndpoint
@@ -17,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
 public class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLatch) :
-    Worker<InfluxDbEndpoint>(endpoint, stoppedGate) {
+    Writer<InfluxDbEndpoint>(endpoint, stoppedGate) {
 
     private val clock = Clock.systemUTC()
 
@@ -85,7 +84,7 @@ public class InfluxDbWriter(endpoint: InfluxDbEndpoint, stoppedGate: CountDownLa
         }
     }
 
-    fun consume(timestamp: Long, device: Device, payload: String) {
+    override fun consume(timestamp: Long, device: Device, payload: String) {
         ThreadContext.push("consume")
         try {
             logger.debug("payload: {}", payload)
