@@ -1,11 +1,12 @@
 plugins {
     java
     application
-    id("net.ltgt.errorprone") version "3.0.1"
     jacoco
-    id("org.sonarqube") version "4.0.0.2929"
-    id("com.google.cloud.tools.jib") version "3.3.1"
-    id("com.gorylenko.gradle-git-properties") version "2.4.1"
+    alias(libs.plugins.errorprone)
+    alias(libs.plugins.sonarqube)
+    alias(libs.plugins.git.properties)
+    alias(libs.plugins.gradle.versions)
+    alias(libs.plugins.jib)
 }
 
 repositories {
@@ -14,24 +15,24 @@ repositories {
 }
 
 group = "com.homeclimatecontrol.esphome2influxdb"
-version = "1.0.0"
+version = "1.0.1"
 
 dependencies {
-    implementation("org.apache.logging.log4j:log4j-api:2.20.0")
-    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
-    implementation("org.yaml:snakeyaml:1.33")
+    implementation(libs.log4j.api)
+    implementation(libs.log4j.core)
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.dataformat.yaml)
 
-    // https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3
-    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
+    implementation(libs.hivemq.mqtt.client)
 
-    implementation("org.influxdb:influxdb-java:2.23")
+    implementation(libs.influxdb)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
-    testImplementation("org.mockito:mockito-core:5.2.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
-    testImplementation("org.assertj:assertj-core:3.24.2")
-    errorprone("com.google.errorprone:error_prone_core:2.18.0")
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.params)
+    testImplementation(libs.mockito)
+    testRuntimeOnly(libs.junit5.engine)
+    testImplementation(libs.assertj.core)
+    errorprone(libs.errorprone)
 }
 
 application {

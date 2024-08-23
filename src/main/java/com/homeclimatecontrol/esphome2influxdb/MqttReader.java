@@ -1,5 +1,12 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
+import org.apache.logging.log4j.ThreadContext;
+
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -9,19 +16,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.ThreadContext;
-import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
+public class MqttReader extends Worker<MqttEndpoint> {
 
     private final Clock clock = Clock.systemUTC();
 
@@ -46,7 +43,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
      */
     public final String clientId = UUID.randomUUID().toString();
 
-    private final IMqttClient client;
+    private final Mqtt5AsyncClient client;
 
     /**
      * Create an instance.
@@ -64,25 +61,62 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
         this.autodiscover = autodiscover;
         this.stopGate = stopGate;
 
-        try {
-            // Only authenticate if both credentials are present
-            if (endpoint.username != null && endpoint.password != null) {
-                client = new MqttClient("tcp://" + endpoint.username + ":" + endpoint.password + "@" + endpoint.host + ":" + endpoint.getPort(), clientId);
-            } else {
-                if (endpoint.username != null) {
-                    // Bad idea to have no password
-                    logger.warn("Missing MQTT password, connecting unauthenticated. This behavior will not be allowed in future releases.");
-                }
-                client = new MqttClient("tcp://" + endpoint.host + ":" + endpoint.getPort(), clientId);
-            }
-        } catch (MqttException ex) {
-            throw new IllegalStateException("Failed to create a client for " + endpoint);
-        }
+        client = createClient(e);
     }
 
+    private Mqtt5AsyncClient createClient(MqttEndpoint endpoint) {
+
+        ThreadContext.push("createClient");
+
+        try {
+
+            // VT: NOTE: Automatic reconnect is disabled by default, here's why:
+            // https://github.com/hivemq/hivemq-mqtt-client/issues/496
+
+            var prototype= Mqtt5Client.builder()
+                    .identifier("esphome2influxdb-" + UUID.randomUUID())
+                    .serverHost(endpoint.host)
+                    .serverPort(endpoint.getPort());
+
+            if (endpoint.autoReconnect) {
+                prototype = prototype.automaticReconnectWithDefaultConfig();
+            }
+
+            var result = prototype.buildAsync();
+
+            var instance = result.toBlocking().connectWith();
+
+            if (endpoint.username != null && endpoint.password != null) {
+                instance = instance.simpleAuth()
+                        .username(endpoint.username)
+                        .password(endpoint.password.getBytes(StandardCharsets.UTF_8))
+                        .applySimpleAuth();
+            }
+
+            try {
+
+                logger.info("{}{}: connecting",
+                        endpoint,
+                        endpoint.autoReconnect ? " (disable reconnect if this gets stuck)" : "");
+
+                var ack = instance.send();
+
+                // send() throws an exception upon failure, will this ever be anything other than SUCCESS?
+                logger.info("{}: connected: {}", endpoint, ack);
+
+            } catch (Mqtt3ConnAckException ex) {
+                throw new IllegalStateException("Can't connect to " + endpoint, ex);
+            }
+
+            return result;
+
+        } finally {
+            ThreadContext.pop();
+        }
+    }
     private Map<String, Device> parseTopic(Collection<Device> source) {
 
-        Map<String, Device> result = new LinkedHashMap<>();
+        var result = new LinkedHashMap<String, Device>();
 
         for (Device d : source) {
             result.put(
@@ -101,7 +135,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
             logger.info("Started");
 
-            connect();
+            subscribe();
 
             stopGate.await();
 
@@ -110,8 +144,6 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
         } catch (InterruptedException ex) {
             logger.error("Interrupted, terminating", ex);
             Thread.currentThread().interrupt();
-        } catch (MqttException ex) {
-            logger.fatal("MQTT problem", ex);
         } finally {
             stoppedGate.countDown();
             logger.info("Shut down");
@@ -119,53 +151,28 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
         }
     }
 
-    private void connect() throws MqttException {
+    private void subscribe() {
 
-        var options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
-        options.setCleanSession(true);
-        options.setConnectionTimeout(10);
-        options.setUserName(endpoint.username);
-
-        // https://github.com/eclipse/paho.mqtt.java/issues/804
-        // https://github.com/home-climate-control/dz/issues/148
-
-        if (endpoint.password != null) {
-            options.setPassword(endpoint.password.toCharArray());
-        }
-
-        client.setCallback(this);
-        client.connect(options);
-
-        client.subscribe(endpoint.topic, 0);
+        client
+                .subscribeWith()
+                .topicFilter(endpoint.topic)
+                .callback(this::callback)
+                .send();
     }
 
-    @Override
-    public void connectionLost(Throwable cause) {
-        logger.error("Lost connection", cause);
-        logger.info("Attempting to reconnect");
-        try {
-            // VT: NOTE: This may not be enough, let's see how reliable this is
-            connect();
-        } catch (MqttException ex) {
-            logger.fatal("Reconnect failed, giving up", ex);
-        }
-    }
-
-    @Override
-    public void messageArrived(String topic, MqttMessage message) throws Exception {
+    private void callback(Mqtt5Publish message) {
         ThreadContext.push("messageArrived");
 
         try {
 
-            var payload = message.toString();
+            var topic = message.getTopic().toString();
+            var payload = new String(message.getPayloadAsBytes());
 
             logger.debug("topic={}, message={}", topic, payload);
 
             if (!consume(topic, payload)) {
                 autodiscover(topic, payload);
             }
-
 
         } finally {
             ThreadContext.pop();
@@ -182,7 +189,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
      */
     private boolean consume(String topic, String payload) {
 
-        for (Map.Entry<String, Device> d : devices.entrySet()) {
+        for (var d : devices.entrySet()) {
 
             // Only the first match is considered, any other way doesn't make sense
 
@@ -218,7 +225,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
             return false;
         }
 
-        logger.debug("match: {}", d.getValue().name);
+        logger.trace("match: {}", d.getValue().name);
 
         // Let's generate the timestamp once so that several writers get the same
         long timestamp = clock.instant().toEpochMilli();
@@ -267,8 +274,8 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
             if (m.matches()) {
 
-                String topicPrefix = m.group(1);
-                String name = m.group(2);
+                var topicPrefix = m.group(1);
+                var name = m.group(2);
 
                 if (!autodiscovered.containsKey(name)) {
 
@@ -277,7 +284,7 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
 
                     if (autodiscover) {
 
-                        Sensor s = new Sensor(topicPrefix, name);
+                        var s = new Sensor(topicPrefix, name);
 
                         s.verify();
 
@@ -320,11 +327,6 @@ public class MqttReader extends Worker<MqttEndpoint> implements MqttCallback {
                 + "    source: {}\n"
                 + "    tags: {} # put your tags here",
                 message, topicPrefix, source);
-    }
-
-    @Override
-    public void deliveryComplete(IMqttDeliveryToken token) {
-        // VT: NOTE: Nothing to do here, we're not sending anything
     }
 
     public void attach(InfluxDbWriter writer) {

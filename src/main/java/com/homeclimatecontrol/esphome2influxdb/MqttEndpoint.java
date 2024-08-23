@@ -13,6 +13,14 @@ public class MqttEndpoint extends Endpoint {
      */
     public String topic = "#";
 
+    /**
+     * Whether to reconnect automatically.
+     *
+     * Automatic reconnect is disabled by default, here's why:
+     * https://github.com/hivemq/hivemq-mqtt-client/issues/496
+     */
+    public Boolean autoReconnect = false;
+
     public MqttEndpoint() {
         setPort(1883);
     }

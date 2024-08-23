@@ -1,19 +1,24 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.mockito.ArgumentCaptor;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-
+@EnabledIfEnvironmentVariable(
+        named = "TEST_ESPHOME2INFLUXDB",
+        matches = "safe",
+        disabledReason = "Only execute this test if a suitable MQTT broker and InfluxDB database are available"
+)
 class MqttReaderTest {
 
     @Test
