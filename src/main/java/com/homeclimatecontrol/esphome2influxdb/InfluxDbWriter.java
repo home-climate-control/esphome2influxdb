@@ -101,7 +101,7 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
 
         try {
 
-            logger.debug("payload: {}", payload);
+            logger.trace("payload: {}", payload);
 
             var s = new Sample(timestamp, device, payload);
 

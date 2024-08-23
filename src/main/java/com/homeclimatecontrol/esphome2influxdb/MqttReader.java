@@ -225,7 +225,7 @@ public class MqttReader extends Worker<MqttEndpoint> {
             return false;
         }
 
-        logger.debug("match: {}", d.getValue().name);
+        logger.trace("match: {}", d.getValue().name);
 
         // Let's generate the timestamp once so that several writers get the same
         long timestamp = clock.instant().toEpochMilli();
