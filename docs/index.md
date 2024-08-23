@@ -13,7 +13,7 @@ esphome2influxdb: Docs
 ## Current Limitations
 
 * Currently works only with [ESPHome Sensor](https://esphome.io/components/sensor/index.html) components, more to come.
-* The project's just been open sourced, documentation is coming, keep checking this wiki for updates.
+* The project's just been open sourced, documentation is coming, keep checking this document tree for updates.
 
 ## Release Notes
 
