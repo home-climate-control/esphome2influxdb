@@ -116,7 +116,7 @@ public class MqttReader extends Worker<MqttEndpoint> {
     }
     private Map<String, Device> parseTopic(Collection<Device> source) {
 
-        Map<String, Device> result = new LinkedHashMap<>();
+        var result = new LinkedHashMap<String, Device>();
 
         for (Device d : source) {
             result.put(
@@ -189,7 +189,7 @@ public class MqttReader extends Worker<MqttEndpoint> {
      */
     private boolean consume(String topic, String payload) {
 
-        for (Map.Entry<String, Device> d : devices.entrySet()) {
+        for (var d : devices.entrySet()) {
 
             // Only the first match is considered, any other way doesn't make sense
 
@@ -274,8 +274,8 @@ public class MqttReader extends Worker<MqttEndpoint> {
 
             if (m.matches()) {
 
-                String topicPrefix = m.group(1);
-                String name = m.group(2);
+                var topicPrefix = m.group(1);
+                var name = m.group(2);
 
                 if (!autodiscovered.containsKey(name)) {
 
@@ -284,7 +284,7 @@ public class MqttReader extends Worker<MqttEndpoint> {
 
                     if (autodiscover) {
 
-                        Sensor s = new Sensor(topicPrefix, name);
+                        var s = new Sensor(topicPrefix, name);
 
                         s.verify();
 

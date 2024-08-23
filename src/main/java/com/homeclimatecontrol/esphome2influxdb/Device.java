@@ -1,11 +1,11 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 public abstract class Device implements Verifiable {
 
@@ -75,7 +75,7 @@ public abstract class Device implements Verifiable {
             // ...but if the topic doesn't contain the source, and the source is not specified, we blow up anyway,
             // ...and only set the name to default (being same as source) if it is not explicitly provided.
 
-            String[] result = resolve(topicPrefix);
+            var result = resolve(topicPrefix);
 
             // Topic prefix may mutate
             topicPrefix = result[0];
@@ -182,8 +182,8 @@ public abstract class Device implements Verifiable {
             throw new IllegalArgumentException("Can't accept null topic here");
         }
 
-        String[] tokens = topic.split("/");
-        String result = tokens[tokens.length - 1];
+        var tokens = topic.split("/");
+        var result = tokens[tokens.length - 1];
         var deviceOffset = 2;
 
         if ("".equals(result)) {
@@ -193,7 +193,7 @@ public abstract class Device implements Verifiable {
         }
 
         // Make sure that we're working with the right device
-        String type = tokens[tokens.length - deviceOffset];
+        var type = tokens[tokens.length - deviceOffset];
 
         if (!getType().literal.equals(type)) {
 

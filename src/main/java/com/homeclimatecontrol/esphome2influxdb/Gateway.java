@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class Gateway {
@@ -22,7 +21,6 @@ public class Gateway {
     private final ObjectMapper objectMapper;
 
     private Gateway() {
-
         objectMapper = new ObjectMapper(new YAMLFactory());
     }
 
@@ -175,14 +173,14 @@ public class Gateway {
             var stopGate = new CountDownLatch(1);
             var stoppedGate = new CountDownLatch(cf.sources.size() + cf.targets.size());
 
-            Set<MqttReader> readers = new LinkedHashSet<>();
-            Set<InfluxDbWriter> writers = new LinkedHashSet<>();
+            var readers = new LinkedHashSet<MqttReader>();
+            var writers = new LinkedHashSet<InfluxDbWriter>();
 
-            for (MqttEndpoint e : cf.sources) {
+            for (var e : cf.sources) {
                 readers.add(new MqttReader(e, cf.getDevices(), cf.autodiscover, stopGate, stoppedGate));
             }
 
-            for (InfluxDbEndpoint e : cf.targets) {
+            for (var e : cf.targets) {
                 writers.add(new InfluxDbWriter(e, readers, stoppedGate));
             }
 
@@ -191,13 +189,13 @@ public class Gateway {
             var roffset = 0;
             var woffset = 0;
 
-            for (Runnable r : readers) {
+            for (var r : readers) {
                 new Thread(r, "thread-reader" + roffset++).start();
             }
 
             logger.info("Started {} reader[s]", readers.size());
 
-            for (Runnable r : writers) {
+            for (var r : writers) {
                 new Thread(r, "thread-writer" + woffset++).start();
             }
 

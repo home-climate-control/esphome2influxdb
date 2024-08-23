@@ -1,14 +1,14 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * Main configuration class.
@@ -22,7 +22,7 @@ public class Configuration implements Verifiable {
     public Set<InfluxDbEndpoint> targets = new LinkedHashSet<>();
     public Set<Object> devices = new LinkedHashSet<>();
 
-    private Set<Device> parsed = new LinkedHashSet<>();
+    private final Set<Device> parsed = new LinkedHashSet<>();
 
     /**
      * Verify the currently loaded configuration.
@@ -106,7 +106,7 @@ public class Configuration implements Verifiable {
             logger.trace("{}: {}", o.getClass().getName(), o);
 
             @SuppressWarnings({ "unchecked" })
-            Map<String, String> m = (Map<String, String>) o;
+            var m = (Map<String, String>) o;
             String type = m.get("type");
 
             if (type == null) {
@@ -146,7 +146,6 @@ public class Configuration implements Verifiable {
     }
 
     public Set<Device> getDevices() {
-
         return parsed;
     }
 
