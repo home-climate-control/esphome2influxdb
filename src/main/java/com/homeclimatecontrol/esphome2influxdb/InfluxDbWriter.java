@@ -1,5 +1,11 @@
 package com.homeclimatecontrol.esphome2influxdb;
 
+import org.apache.logging.log4j.ThreadContext;
+import org.influxdb.InfluxDB;
+import org.influxdb.InfluxDBFactory;
+import org.influxdb.dto.Point;
+import org.influxdb.dto.Query;
+
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.util.Queue;
@@ -7,12 +13,6 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.logging.log4j.ThreadContext;
-import org.influxdb.InfluxDB;
-import org.influxdb.InfluxDBFactory;
-import org.influxdb.dto.Point;
-import org.influxdb.dto.Query;
 
 public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
 
@@ -156,7 +156,7 @@ public class InfluxDbWriter extends Worker<InfluxDbEndpoint> {
                 // Known problem
 
                 if ("nan".equalsIgnoreCase(sample.payload)) {
-                    logger.warn("NaN payload, ignored: {}", sample);
+                    logger.debug("NaN payload, ignored: {}", sample);
                     queue.remove();
                     continue;
                 }
