@@ -15,7 +15,7 @@ repositories {
 }
 
 group = "com.homeclimatecontrol.esphome2influxdb"
-version = "1.0.1-SNAPSHOT"
+version = "1.0.1"
 
 dependencies {
     implementation(libs.log4j.api)
